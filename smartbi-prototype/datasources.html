@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数据源 · SmartBI 智能分析</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="datasources">
+
+<!-- ============ Sidebar Nav (frozen) ============ -->
+<aside class="app-nav">
+  <div class="brand">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+    </div>
+    <h1>Smart<span>BI</span></h1>
+  </div>
+  <div class="nav-section">
+    <div class="label">主菜单</div>
+    <a class="nav-item" data-nav="dashboard" href="index.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>工作台</span>
+    </a>
+    <a class="nav-item" data-nav="datasources" href="datasources.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据源</span>
+    </a>
+    <a class="nav-item" data-nav="chat" href="chat.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>智能问数</span>
+      <span class="badge">NEW</span>
+    </a>
+    <a class="nav-item" data-nav="themes" href="themes.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>分析主题</span>
+    </a>
+    <a class="nav-item" data-nav="tasks" href="tasks.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>AI 任务</span>
+    </a>
+  </div>
+  <div class="nav-footer">
+    <div class="user-card">
+      <div class="avatar">YQ</div>
+      <div class="user-info"><div class="name">余强</div><div class="role">数据分析师</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="app-content">
+  <header class="topbar">
+    <div class="page-title"><span class="crumb">SmartBI</span> / 数据源</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        刷新
+      </button>
+      <button class="btn btn-primary" id="btnUpload">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        接入新数据源
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Data source stats -->
+    <div class="grid grid-4 mb-24">
+      <div class="metric-card fade-in">
+        <div class="icon-box" style="background:var(--success-soft,rgba(16,185,129,.12))">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="metric-value">1</div>
+        <div class="metric-label">已接入数据源</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.05s">
+        <div class="icon-box" style="background:var(--primary-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        </div>
+        <div class="metric-value">1</div>
+        <div class="metric-label">数据表（销售事实表）</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.1s">
+        <div class="icon-box" style="background:var(--accent-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="metric-value">82,530</div>
+        <div class="metric-label">销售订单记录</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.15s">
+        <div class="icon-box" style="background:rgba(245,158,11,.12)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="metric-value">2</div>
+        <div class="metric-label">待接入数据源</div>
+      </div>
+    </div>
+
+    <!-- Data source list -->
+    <div class="section-head">
+      <div>
+        <div class="section-title">数据源列表</div>
+        <div class="section-desc">管理接入 SmartBI 的数据来源，支持 CSV / Excel / API 等多种方式</div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>数据源名称</th><th>类型</th><th>状态</th><th>记录数</th><th>更新时间</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="flex gap-12" style="align-items:center">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight:600">销售订单数据</div>
+                  <div style="font-size:11px;color:var(--text-mute)">saledata-test.xlsx · Sheet1</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-primary">Excel</span></td>
+            <td><span class="tag tag-success"><span class="pulse-dot" style="margin-right:5px"></span>已就绪</span></td>
+            <td class="num">82,530</td>
+            <td style="color:var(--text-sub)">2026-11-01 14:20</td>
+            <td>
+              <button class="btn btn-ghost btn-sm">预览</button>
+              <button class="btn btn-ghost btn-sm">配置</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="flex gap-12" style="align-items:center">
+                <div style="width:36px;height:36px;border-radius:8px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight:600">亚马逊广告分析</div>
+                  <div style="font-size:11px;color:var(--text-mute)">Amazon Ads API · 待接入</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag">API</span></td>
+            <td><span class="tag tag-warning">待接入</span></td>
+            <td class="num">—</td>
+            <td style="color:var(--text-mute)">—</td>
+            <td><button class="btn btn-primary btn-sm">接入</button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="flex gap-12" style="align-items:center">
+                <div style="width:36px;height:36px;border-radius:8px;background:rgba(139,92,246,.12);display:flex;align-items:center;justify-content:center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight:600">流量分析数据</div>
+                  <div style="font-size:11px;color:var(--text-mute)">Google Analytics · 待接入</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag">API</span></td>
+            <td><span class="tag tag-warning">待接入</span></td>
+            <td class="num">—</td>
+            <td style="color:var(--text-mute)">—</td>
+            <td><button class="btn btn-primary btn-sm">接入</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Data model: Star Schema -->
+    <div class="section-head">
+      <div>
+        <div class="section-title">数据模型设计</div>
+        <div class="section-desc">采用星型模型（Star Schema），以销售事实表为中心，关联维度表，便于扩展广告、流量等事实表</div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <!-- ER diagram -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:32px;flex-wrap:wrap;padding:20px 0">
+        <!-- Dimension tables -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--surface-2);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;min-width:160px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">维度表</div>
+            <div style="font-weight:600;color:var(--accent)">dim_date</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">date_id, year, month</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;min-width:160px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">维度表</div>
+            <div style="font-weight:600;color:var(--accent)">dim_platform</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">platform_id, name</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;min-width:160px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">维度表</div>
+            <div style="font-weight:600;color:var(--accent)">dim_country</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">country_id, name, region</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;min-width:160px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">维度表</div>
+            <div style="font-weight:600;color:var(--accent)">dim_category</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">cat_id, lvl1/2/3</div>
+          </div>
+        </div>
+
+        <!-- Center: fact tables -->
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#5b6e8f" stroke-width="1.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          <div style="background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(6,182,212,.12));border:2px solid var(--primary);border-radius:12px;padding:18px 24px;min-width:200px;text-align:center;box-shadow:var(--glow)">
+            <div style="font-size:11px;color:var(--text-mute)">事实表（核心）</div>
+            <div style="font-weight:700;color:var(--primary);font-size:16px">fact_sales</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:6px;line-height:1.6">
+              date_id · platform_id<br>country_id · category_id<br><strong>trd_amt_eur</strong> · <strong>trd_prod_qty</strong>
+            </div>
+            <div style="margin-top:10px;font-size:11px;color:var(--success)">82,530 行 · 已加载</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px dashed var(--border-light);border-radius:12px;padding:16px 20px;min-width:200px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">事实表（规划）</div>
+            <div style="font-weight:600;color:var(--warning)">fact_ads</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">impressions, clicks, cost</div>
+          </div>
+          <div style="background:var(--surface-2);border:1px dashed var(--border-light);border-radius:12px;padding:16px 20px;min-width:200px;text-align:center">
+            <div style="font-size:11px;color:var(--text-mute)">事实表（规划）</div>
+            <div style="font-weight:600;color:var(--warning)">fact_traffic</div>
+            <div style="font-size:11px;color:var(--text-mute);margin-top:4px">sessions, page_views</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data table details -->
+    <div class="section-head">
+      <div>
+        <div class="section-title">数据表字段详情</div>
+        <div class="section-desc">fact_sales 销售事实表字段定义（基于已接入的销售订单数据）</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr><th>字段名</th><th>类型</th><th>说明</th><th>示例值</th><th>角色</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>order_year</code></td><td>INT</td><td>订单年份</td><td>2024</td><td><span class="tag tag-accent">维度</span></td></tr>
+          <tr><td><code>order_month</code></td><td>INT</td><td>订单月份</td><td>1 ~ 12</td><td><span class="tag tag-accent">维度</span></td></tr>
+          <tr><td><code>platform_name</code></td><td>VARCHAR</td><td>平台名称（17个平台）</td><td>Amazon, Temu, Ebay</td><td><span class="tag tag-accent">维度</span></td></tr>
+          <tr><td><code>country_name</code></td><td>VARCHAR</td><td>国家名称（53个国家）</td><td>France, Germany</td><td><span class="tag tag-accent">维度</span></td></tr>
+          <tr><td><code>cate_lvl3_cn</code></td><td>VARCHAR</td><td>三级品类中文名（143个品类）</td><td>卫浴水槽柜, 梳妆台</td><td><span class="tag tag-accent">维度</span></td></tr>
+          <tr><td><code>trd_amt_eur</code></td><td>DECIMAL(12,2)</td><td>交易金额（欧元）</td><td>21811.90</td><td><span class="tag tag-primary">度量</span></td></tr>
+          <tr><td><code>trd_prod_qty</code></td><td>INT</td><td>交易产品数量</td><td>353</td><td><span class="tag tag-primary">度量</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Data preview -->
+    <div class="section-head mt-24">
+      <div>
+        <div class="section-title">数据预览</div>
+        <div class="section-desc">fact_sales 前 5 条记录</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        导出 CSV
+      </button>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="data-table">
+        <thead>
+          <tr><th>order_year</th><th>order_month</th><th>platform_name</th><th>country_name</th><th>cate_lvl3_cn</th><th class="num">trd_amt_eur</th><th class="num">trd_prod_qty</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2024</td><td>1</td><td>Amazon</td><td>France</td><td>卫浴水槽柜</td><td class="num">21,811.90</td><td class="num">353</td></tr>
+          <tr><td>2024</td><td>1</td><td>Amazon</td><td>United Kingdom</td><td>汽车脚垫</td><td class="num">2,667.84</td><td class="num">140</td></tr>
+          <tr><td>2024</td><td>1</td><td>Amazon</td><td>France</td><td>梳妆台</td><td class="num">394,932.75</td><td class="num">2,492</td></tr>
+          <tr><td>2024</td><td>1</td><td>Amazon</td><td>Germany</td><td>儿童桌椅</td><td class="num">83,439.09</td><td class="num">1,314</td></tr>
+          <tr><td>2024</td><td>1</td><td>Amazon</td><td>United Kingdom</td><td>空气炸锅</td><td class="num">195,709.95</td><td class="num">1,813</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- Upload modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">接入新数据源</div>
+      <button class="close-btn" onclick="document.getElementById('uploadModal').classList.remove('active')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:13px;color:var(--text-sub);display:block;margin-bottom:6px">数据源名称</label>
+        <input class="input" placeholder="例如：亚马逊广告分析">
+      </div>
+      <div>
+        <label style="font-size:13px;color:var(--text-sub);display:block;margin-bottom:6px">接入方式</label>
+        <div class="grid grid-3" style="gap:10px">
+          <div class="card" style="padding:14px;text-align:center;cursor:pointer;border-color:var(--primary)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" style="margin:0 auto 6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div style="font-size:12px">上传文件</div>
+          </div>
+          <div class="card" style="padding:14px;text-align:center;cursor:pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-sub)" stroke-width="1.8" style="margin:0 auto 6px"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <div style="font-size:12px">API 接入</div>
+          </div>
+          <div class="card" style="padding:14px;text-align:center;cursor:pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-sub)" stroke-width="1.8" style="margin:0 auto 6px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <div style="font-size:12px">数据库</div>
+          </div>
+        </div>
+      </div>
+      <div style="border:2px dashed var(--border-light);border-radius:var(--r-lg);padding:32px;text-align:center;background:var(--bg-2)">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-mute)" stroke-width="1.5" style="margin:0 auto 10px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="font-size:13px;color:var(--text-sub)">拖拽文件到此处，或 <span style="color:var(--primary);cursor:pointer">点击选择</span></div>
+        <div style="font-size:11px;color:var(--text-mute);margin-top:4px">支持 CSV / Excel / Parquet，最大 200MB</div>
+      </div>
+      <div class="flex" style="justify-content:flex-end;gap:10px;margin-top:8px">
+        <button class="btn btn-ghost">取消</button>
+        <button class="btn btn-primary">开始接入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="nav-active.js"></script>
+<script>
+  document.getElementById('btnUpload').addEventListener('click',()=>{
+    document.getElementById('uploadModal').classList.add('active');
+  });
+</script>
+</body>
+</html>

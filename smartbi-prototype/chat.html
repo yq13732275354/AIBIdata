@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>智能问数 · SmartBI 智能分析</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  .chat-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;height:calc(100vh - var(--topbar-h) - 48px)}
+  .chat-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);display:flex;flex-direction:column;overflow:hidden}
+  .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .chat-messages{flex:1;overflow-y:auto;padding:20px}
+  .chat-input-area{padding:16px 20px;border-top:1px solid var(--border);background:var(--bg-2)}
+  .chat-input-wrap{display:flex;gap:10px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px}
+  .chat-input-wrap:focus-within{border-color:var(--primary)}
+  .chat-input-wrap textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;resize:none;min-height:24px;max-height:120px;font-family:inherit}
+  .chat-input-wrap textarea::placeholder{color:var(--text-mute)}
+  .send-btn{width:38px;height:38px;border-radius:var(--r-md);background:var(--primary);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  .send-btn:hover{background:var(--primary-hover)}
+  .send-btn:disabled{opacity:.5;cursor:not-allowed}
+  .send-btn svg{stroke:#fff}
+  .side-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+  .side-head{padding:14px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+  .side-body{padding:16px;overflow-y:auto;font-size:13px}
+  .chain-step{display:flex;gap:10px;margin-bottom:14px}
+  .chain-step .step-dot{width:22px;height:22px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;color:var(--text-sub)}
+  .chain-step.done .step-dot{background:var(--success);color:#fff}
+  .chain-step.active .step-dot{background:var(--primary);color:#fff;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .chain-step .step-title{font-size:13px;font-weight:500}
+  .chain-step .step-desc{font-size:12px;color:var(--text-mute);margin-top:2px;line-height:1.6}
+  .chain-step pre{background:var(--bg);padding:8px;border-radius:6px;font-size:11px;margin-top:6px;color:var(--accent);white-space:pre-wrap;word-break:break-all;max-height:180px;overflow:auto}
+  .artifact{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-top:12px}
+  .artifact-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .artifact-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .insight-box{background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(59,130,246,.06));border:1px solid rgba(6,182,212,.2);border-radius:var(--r-md);padding:12px 14px;margin-top:12px}
+  .insight-box .insight-label{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+  .insight-box ul{margin:0;padding-left:18px;font-size:13px}
+  .insight-box li{margin-bottom:4px}
+  .echart{width:100%;height:300px}
+  .table-scroll{max-height:340px;overflow:auto}
+  .typing{display:inline-flex;gap:4px;align-items:center;color:var(--text-mute);font-size:13px}
+  .typing span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:bounce 1s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-4px);opacity:1}}
+  .sql-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--accent)}
+  @media(max-width:1100px){.chat-layout{grid-template-columns:1fr}.side-panel{display:none}}
+</style>
+</head>
+<body data-page="chat">
+
+<!-- ============ Sidebar Nav (frozen) ============ -->
+<aside class="app-nav">
+  <div class="brand">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+    </div>
+    <h1>Smart<span>BI</span></h1>
+  </div>
+  <div class="nav-section">
+    <div class="label">主菜单</div>
+    <a class="nav-item" data-nav="dashboard" href="index.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>工作台</span>
+    </a>
+    <a class="nav-item" data-nav="datasources" href="datasources.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据源</span>
+    </a>
+    <a class="nav-item" data-nav="chat" href="chat.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>智能问数</span>
+      <span class="badge">NEW</span>
+    </a>
+    <a class="nav-item" data-nav="themes" href="themes.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>分析主题</span>
+    </a>
+    <a class="nav-item" data-nav="tasks" href="tasks.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>AI 任务</span>
+    </a>
+  </div>
+  <div class="nav-footer">
+    <div class="user-card">
+      <div class="avatar">YQ</div>
+      <div class="user-info"><div class="name">余强</div><div class="role">数据分析师</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="app-content">
+  <header class="topbar">
+    <div class="page-title"><span class="crumb">SmartBI</span> / 智能问数</div>
+    <div class="topbar-actions">
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);font-size:12px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span style="color:var(--text-sub)">数据集：</span><strong id="dsLabel">销售订单数据</strong>
+      </div>
+      <button class="icon-btn" id="btnNew" title="新对话">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main" style="padding-top:12px;padding-bottom:0">
+    <div class="chat-layout">
+      <!-- Chat panel -->
+      <div class="chat-panel">
+        <div class="chat-header">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 10v2a6 6 0 0 0 12 0v-2"/><path d="M12 18v4"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px">SmartBI 问数助手</div>
+              <div style="font-size:11px;color:var(--success)" id="statusLine"><span class="pulse-dot" style="margin-right:5px"></span>在线 · 语义层 + DeepSeek</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btnReset">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            新对话
+          </button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <!-- Quick chips -->
+        <div id="quickChips" style="padding:10px 20px 0;display:flex;gap:8px;flex-wrap:wrap"></div>
+
+        <!-- Input -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrap">
+            <textarea id="chatInput" placeholder="输入你的问题，例如：2025年各平台销售额同比" rows="1"></textarea>
+            <button class="send-btn" id="btnSend">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <div style="font-size:11px;color:var(--text-mute)" id="hintLine">数据范围 2024-01 ~ 2025-12 · 缺少基期的口径会如实标注，不做推算</div>
+            <div style="font-size:11px;color:var(--text-mute)">AI 生成内容仅供参考，请核实关键数据</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side panel: analysis chain -->
+      <div class="side-panel">
+        <div class="side-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          分析过程
+        </div>
+        <div class="side-body" id="sideBody">
+          <div id="chain"></div>
+          <div style="margin-top:20px;padding:12px;background:var(--bg-2);border-radius:var(--r-md)">
+            <div style="font-size:12px;color:var(--text-mute);margin-bottom:8px">当前会话槽位</div>
+            <div style="font-size:12px" id="slotsBox">
+              <div style="color:var(--text-mute)">还没有查询，先问一个问题吧。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="nav-active.js"></script>
+<script>
+/* ================= 格式化 ================= */
+function fmtNum(v){
+  if(v===null||v===undefined) return '—';
+  if(typeof v!=='number') return v;
+  const s = v<0?'-':''; v=Math.abs(v);
+  if(v>=1e8) return s+(v/1e8).toFixed(2)+' 亿';
+  if(v>=1e4) return s+(v/1e4).toFixed(1)+' 万';
+  return s+v.toLocaleString('en-US',{maximumFractionDigits:2});
+}
+function fmtInt(v){
+  if(v===null||v===undefined) return '—';
+  return typeof v==='number' ? Math.round(v).toLocaleString('en-US') : v;
+}
+function fmtPct(v, signed){
+  if(v===null||v===undefined) return '—';
+  const p = v*100;
+  return (signed && p>0 ? '+' : '') + p.toFixed(1) + '%';
+}
+function fmtCell(v, fmt){
+  if(fmt==='currency') return fmtNum(v)+' EUR';
+  if(fmt==='int') return fmtInt(v);
+  if(fmt==='percent') return fmtPct(v, false);
+  if(fmt==='number') return fmtNum(v);
+  return v===null||v===undefined?'—':String(v);
+}
+function fmtFor(col){
+  if(col.format==='currency') return v=>fmtNum(v)+' EUR';
+  if(col.format==='percent') return v=>fmtPct(v,true);
+  if(col.format==='int') return fmtInt;
+  if(col.format==='number') return fmtNum;
+  return v=>v;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt'}[c]));}
+
+/* ================= 状态 ================= */
+let CID = localStorage.getItem('aibi_cid') || null;
+let currentES = null;
+let chartSeq = 0;
+
+const msgs = document.getElementById('chatMessages');
+const input = document.getElementById('chatInput');
+const btnSend = document.getElementById('btnSend');
+
+function scrollBottom(){ msgs.scrollTop = msgs.scrollHeight; }
+
+function avatarSVG(isUser){
+  return isUser
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 10v2a6 6 0 0 0 12 0v-2"/><path d="M12 18v4"/></svg>';
+}
+
+function addUser(text){
+  const d = document.createElement('div');
+  d.className = 'chat-msg user';
+  d.innerHTML = `<div class="chat-avatar">${avatarSVG(true)}</div>
+    <div class="chat-bubble"><div class="content">${esc(text)}</div></div>`;
+  msgs.appendChild(d); scrollBottom();
+}
+
+function addAssistantShell(placeholder){
+  const d = document.createElement('div');
+  d.className = 'chat-msg';
+  d.innerHTML = `<div class="chat-avatar">${avatarSVG(false)}</div>
+    <div class="chat-bubble" style="max-width:100%" id="pending">
+      <div class="meta">SmartBI</div>
+      <div class="content"><span class="typing">${placeholder||'正在分析'}<span></span><span></span><span></span></span></div>
+    </div>`;
+  msgs.appendChild(d); scrollBottom();
+  return d.querySelector('#pending');
+}
+
+function welcome(){
+  msgs.innerHTML = '';
+  const d = document.createElement('div');
+  d.className = 'chat-msg';
+  d.innerHTML = `<div class="chat-avatar">${avatarSVG(false)}</div>
+    <div class="chat-bubble">
+      <div class="content">你好！我是 SmartBI 问数助手，直接连本地 DuckDB 的销售数据（2024-01 ~ 2025-12，82,530 行）。所有数字都是实算，缺基期的同比/环比会如实说明。<br><br>你可以这样问我：</div>
+      <div class="chip-list mt-12">
+        <div class="chip" data-q="2025年总销售额和同比">2025年总销售额和同比</div>
+        <div class="chip" data-q="2025年各平台销售额同比">各平台销售额同比</div>
+        <div class="chip" data-q="Top10 品类销售额">Top10 品类销售额</div>
+        <div class="chip" data-q="2025年各月的销售额趋势">销售额月度趋势</div>
+      </div>
+    </div>`;
+  msgs.appendChild(d);
+  bindChips(d);
+  scrollBottom();
+  resetSide();
+}
+
+function bindChips(scope){
+  (scope||document).querySelectorAll('.chip[data-q]').forEach(c=>{
+    c.onclick = ()=>{ input.value = c.dataset.q; send(); };
+  });
+}
+
+/* ================= 侧栏 ================= */
+const STEPS = ['解析问题','生成 SQL','安全校验','执行查询','生成结论'];
+function resetSide(){
+  document.getElementById('chain').innerHTML = '';
+  document.getElementById('slotsBox').innerHTML = '<div style="color:var(--text-mute)">还没有查询，先问一个问题吧。</div>';
+}
+function renderChain(done, running, sql, meta){
+  const chain = document.getElementById('chain');
+  chain.innerHTML = STEPS.map((s,i)=>{
+    const state = i<=done ? 'done' : (i===running ? 'active' : '');
+    return `<div class="chain-step ${state}">
+      <div class="step-dot">${state==='done'?'✓':i+1}</div>
+      <div>
+        <div class="step-title">${s}</div>
+        ${(i===1 && sql) ? `<pre class="sql-line">${esc(sql)}</pre>` : ''}
+        ${(i===2 && sql) ? `<div class="step-desc" style="color:var(--success)">✓ 仅 SELECT · 表/列白名单通过</div>` : ''}
+        ${(i===3 && meta) ? `<div class="step-desc">返回 ${meta.rows} 行 · 耗时 ${meta.ms} ms</div>` : ''}
+        ${(i===0 && meta) ? `<div class="step-desc">${esc(meta.desc||'')}</div>` : ''}
+      </div></div>`;
+  }).join('');
+}
+function renderSlots(slots){
+  const box = document.getElementById('slotsBox');
+  if(!slots){ box.innerHTML='<div style="color:var(--text-mute)">本轮未产出可继承的槽位。</div>'; return; }
+  const chartNames = {combo:'组合图',bar:'柱状图',line:'折线图',area:'面积图',pie:'饼图',donut:'环形图',hbar:'条形图',scatter:'散点图',table:'表格',kpi:'指标卡'};
+  const rows = [
+    ['时间', slots.time ? slots.time[2] : '—'],
+    ['指标', (slots.metrics||[]).join(', ')||'—'],
+    ['维度', (slots.group_by||[]).join(', ')||'（无分组）'],
+    ['筛选', Object.keys(slots.filters||{}).length ? Object.entries(slots.filters).map(([k,v])=>k+'='+v.join('/')).join('；') : '—'],
+    ['TopN', slots.top_n || '—'],
+    ['图形', slots.chart ? (chartNames[slots.chart]||slots.chart) : '自动'],
+  ];
+  box.innerHTML = rows.map(([k,v])=>
+    `<div class="flex-between mb-6"><span style="color:var(--text-mute)">${k}</span><span>${esc(v)}</span></div>`
+  ).join('');
+}
+
+/* ================= 渲染回答 ================= */
+function renderAnswer(bubble, p){
+  const cols = p.columns||[], rows = p.rows||[];
+  let html = `<div class="meta">SmartBI · ${p.source==='nl2sql'?'NL2SQL 兜底':'语义层'} · ${p.elapsed_ms||0} ms${p.period?' · '+esc(p.period):''}</div>`;
+  html += `<div class="content">${esc(p.headline)}</div>`;
+
+  if(p.chart){
+    chartSeq++;
+    html += `<div class="artifact">
+      <div class="artifact-head"><div class="artifact-title">${esc(p.period||'可视化结果')}</div></div>
+      <div class="echart" id="ec-${chartSeq}"></div></div>`;
+  }
+
+  if(rows.length && cols.length){
+    const shown = rows.slice(0,50);
+    html += `<div class="artifact">
+      <div class="artifact-head"><div class="artifact-title">数据明细（${rows.length} 行${rows.length>50?'，仅显示前 50 行':''}）</div></div>
+      <div class="table-scroll"><table class="data-table" style="margin:0">
+        <thead><tr>${cols.map(c=>`<th class="${c.format!=='text'?'num':''}">${esc(c.label)}</th>`).join('')}</tr></thead>
+        <tbody>${shown.map(r=>`<tr>${cols.map((c,ci)=>{
+          const v = r[ci];
+          const cls = c.format!=='text' ? 'num' : '';
+          const color = c.format==='percent' && typeof v==='number' ? ` style="color:${v>=0?'var(--success)':'var(--danger,#ef4444)'}"` : '';
+          return `<td class="${cls}"${color}>${esc(fmtCell(v,c.format))}</td>`;
+        }).join('')}</tr>`).join('')}</tbody>
+      </table></div></div>`;
+  }
+
+  const bullets = (p.bullets||[]).concat(p.notes||[]);
+  if(p.insight || bullets.length){
+    html += `<div class="insight-box">
+      <div class="insight-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>AI 洞察</div>
+      <ul>${p.insight?`<li>${esc(p.insight)}</li>`:''}${bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul></div>`;
+  }
+  bubble.innerHTML = html;
+
+  if(p.chart){
+    const el = document.getElementById('ec-'+chartSeq);
+    const opt = p.chart;
+    const isMoney = cols.some(c=>c.format==='currency');
+    const isPct = cols.some(c=>c.format==='percent');
+    const axes = Array.isArray(opt.yAxis) ? opt.yAxis : (opt.yAxis?[opt.yAxis]:[]);
+    axes.forEach((ax,i)=>{
+      ax.axisLabel = ax.axisLabel || {};
+      if(i===1 && isPct) ax.axisLabel.formatter = v=>fmtPct(v,true);
+      else if(isMoney) ax.axisLabel.formatter = v=>fmtNum(v);
+      else ax.axisLabel.formatter = v=>fmtInt(v);
+    });
+    const byName = {};
+    cols.forEach(c=>{ byName[c.label] = fmtFor(c); });
+    if(opt.tooltip){
+      opt.tooltip.valueFormatter = (v,params)=>{
+        const name = params && (params.seriesName || (Array.isArray(params)&&params[0]&&params[0].seriesName));
+        const f = name && byName[name];
+        return f ? f(v) : (isPct?fmtPct(v,false):fmtNum(v));
+      };
+    }
+    const chart = echarts.init(el, null, {renderer:'canvas'});
+    chart.setOption(opt);
+    window.addEventListener('resize', ()=>chart.resize());
+  }
+  scrollBottom();
+}
+
+function renderSpecial(bubble, p){
+  let html = `<div class="meta">SmartBI</div><div class="content">${esc(p.headline)}</div>`;
+  if(p.notes && p.notes.length){
+    if(p.type==='clarify'){
+      html += `<div class="chip-list mt-12">${p.notes.map(o=>`<div class="chip" data-q="${esc(o)}">${esc(o)}</div>`).join('')}</div>`;
+    }else{
+      html += `<div class="insight-box"><div class="insight-label">提示</div><ul>${p.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul></div>`;
+    }
+  }
+  bubble.innerHTML = html;
+  bindChips(bubble);
+  scrollBottom();
+}
+
+/* ================= 发送 ================= */
+function send(){
+  const q = input.value.trim();
+  if(!q) return;
+  input.value='';
+  input.style.height='auto';
+  btnSend.disabled = true;
+  addUser(q);
+  const bubble = addAssistantShell('正在解析问题');
+  resetSide();
+  renderChain(-1,0,null,null);
+
+  if(currentES){ currentES.close(); currentES=null; }
+  const url = `/api/chat/stream?q=${encodeURIComponent(q)}${CID?`&cid=${CID}`:''}`;
+  const es = new EventSource(url);
+  currentES = es;
+  let gotResult = false;
+
+  es.addEventListener('stage', ev=>{
+    const d = JSON.parse(ev.data);
+    const b = document.getElementById('pending');
+    if(b) b.querySelector('.content').innerHTML = `<span class="typing">${esc(d.stage)}<span></span><span></span><span></span></span>`;
+    renderChain(0, d.stage.includes('结论')?4:0, null, {desc:d.stage});
+  });
+  es.addEventListener('sql', ev=>{
+    const d = JSON.parse(ev.data);
+    renderChain(2,3,d.sql,{desc:'已通过白名单校验'});
+  });
+  es.addEventListener('result', ev=>{
+    gotResult = true;
+    es.close(); currentES=null;
+    const p = JSON.parse(ev.data);
+    if(p.conversation_id){ CID = p.conversation_id; localStorage.setItem('aibi_cid', CID); }
+    const b = document.getElementById('pending');
+    if(b){
+      b.removeAttribute('id');
+      if(p.type==='answer' || p.type==='nodata') renderAnswer(b, p);
+      else renderSpecial(b, p);
+    }
+    renderChain(5,5,p.sql||'', {rows:(p.rows||[]).length, ms:p.elapsed_ms||0});
+    renderSlots(p.slots||null);
+    btnSend.disabled = false;
+    input.focus();
+  });
+  es.onerror = ()=>{
+    if(gotResult) return;
+    es.close(); currentES=null;
+    const b = document.getElementById('pending');
+    if(b) b.innerHTML = `<div class="meta">SmartBI</div><div class="content" style="color:#f59e0b">连接中断，请确认后端服务已启动（uvicorn app.main:app）。</div>`;
+    btnSend.disabled = false;
+  };
+}
+
+btnSend.onclick = send;
+input.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+});
+input.addEventListener('input', ()=>{ input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,120)+'px'; });
+document.getElementById('btnReset').onclick = ()=>{ CID=null; localStorage.removeItem('aibi_cid'); welcome(); };
+document.getElementById('btnNew').onclick = ()=>{ CID=null; localStorage.removeItem('aibi_cid'); welcome(); };
+
+/* 示例问题 */
+fetch('/api/suggestions').then(r=>r.json()).then(d=>{
+  const box = document.getElementById('quickChips');
+  box.innerHTML = (d.suggestions||[]).slice(0,6).map(s=>
+    `<div class="chip" style="font-size:12px" data-q="${esc(s)}">${esc(s)}</div>`).join('');
+  bindChips(box);
+}).catch(()=>{});
+
+fetch('/api/health').then(r=>r.json()).then(d=>{
+  document.getElementById('hintLine').textContent =
+    `数据范围 2024-01 ~ 2025-12 · 锚定期间 ${d.anchor_period} · 模型 ${d.model}`;
+}).catch(()=>{});
+
+welcome();
+</script>
+</body>
+</html>

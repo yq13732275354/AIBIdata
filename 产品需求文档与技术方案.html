@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能问数与智能分析 Agent — 产品需求文档与技术方案</title>
+<style>
+  :root{
+    --primary:#1a73e8;--primary-dark:#1557b0;--accent:#34a853;
+    --bg:#f8f9fa;--card:#ffffff;--text:#202124;--text-light:#5f6368;
+    --border:#dadce0;--code-bg:#f1f3f4;--warn:#fbbc04;--danger:#ea4335;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+  .container{max-width:1100px;margin:0 auto;padding:32px 24px}
+  header{background:linear-gradient(135deg,#1a73e8 0%,#1557b0 100%);color:#fff;padding:48px 0;margin-bottom:32px;border-radius:0 0 16px 16px}
+  header .container{padding:0 24px}
+  header h1{font-size:30px;font-weight:700;margin-bottom:8px}
+  header .subtitle{font-size:16px;opacity:.9;margin-bottom:16px}
+  header .meta{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;opacity:.85}
+  header .meta span::before{content:"●";margin-right:6px;opacity:.6}
+  h2{font-size:24px;font-weight:700;color:var(--primary-dark);margin:40px 0 16px;padding-bottom:8px;border-bottom:3px solid var(--primary)}
+  h3{font-size:19px;font-weight:600;color:var(--text);margin:28px 0 12px}
+  h4{font-size:16px;font-weight:600;color:var(--text);margin:20px 0 8px}
+  p{margin-bottom:12px}
+  ul,ol{margin:8px 0 16px 24px}
+  li{margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;margin:16px 0;background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+  th{background:#e8f0fe;color:var(--primary-dark);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8faff}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:4px;font-size:13px;font-family:"SF Mono","Monaco",monospace}
+  pre{background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.5}
+  pre code{background:none;padding:0;color:inherit}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;margin-right:6px}
+  .tag-p0{background:#fce8e6;color:var(--danger)}
+  .tag-p1{background:#fef7e0;color:#b06000}
+  .tag-out{background:#e8eaed;color:#5f6368}
+  .tag-assume{background:#e6f4ea;color:var(--accent)}
+  .tag-info{background:#e8f0fe;color:var(--primary)}
+  .assumption{background:#fff8e1;border-left:4px solid var(--warn);padding:12px 16px;margin:12px 0;border-radius:4px}
+  .assumption::before{content:"⚠ Assumption / TBD";font-weight:700;color:#b06000;display:block;margin-bottom:4px;font-size:13px}
+  .note{background:#e6f4ea;border-left:4px solid var(--accent);padding:12px 16px;margin:12px 0;border-radius:4px}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:20px 0}
+  .toc h3{margin-top:0}
+  .toc ol{columns:2;column-gap:32px}
+  .toc a{color:var(--primary);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .flow-diagram{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;font-family:"SF Mono",monospace;font-size:13px;white-space:pre;overflow-x:auto;line-height:1.6}
+  .section-divider{border:none;border-top:2px dashed var(--border);margin:48px 0}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:768px){.grid-2{grid-template-columns:1fr}.toc ol{columns:1}}
+  .fr-id{font-weight:700;color:var(--primary)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>智能问数与智能分析 Agent</h1>
+    <div class="subtitle">产品需求文档（PRD）与技术方案</div>
+    <div class="meta">
+      <span>版本：v1.0（MVP 草案）</span>
+      <span>语言：Python</span>
+      <span>参考产品：阿里云 Quick BI 智能小Q（羚羊）</span>
+      <span>数据基础：销售数据</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ============== 目录 ============== -->
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#part1">第一部分：产品需求文档（PRD）</a></li>
+    <li><a href="#bg">1. 背景与目标</a></li>
+    <li><a href="#scope">2. 范围定义</a></li>
+    <li><a href="#model">3. 产品模型</a></li>
+    <li><a href="#fr-ask">4. 功能需求 — 智能问数</a></li>
+    <li><a href="#fr-report">5. 功能需求 — 智能解读与报告</a></li>
+    <li><a href="#fr-viz">6. 功能需求 — 可视化输出</a></li>
+    <li><a href="#shared">7. 共享规则与异常处理</a></li>
+    <li><a href="#open">8. 待确认问题</a></li>
+    <li><a href="#part2">第二部分：技术方案</a></li>
+    <li><a href="#arch">1. 总体架构</a></li>
+    <li><a href="#stack">2. 技术栈选型</a></li>
+    <li><a href="#design">3. 模块级设计</a></li>
+    <li><a href="#flow">4. 核心数据流</a></li>
+    <li><a href="#decisions">5. 关键技术决策</a></li>
+    <li><a href="#structure">6. 项目结构</a></li>
+    <li><a href="#roadmap">7. 实施路线</a></li>
+  </ol>
+</div>
+
+<!-- ============== 第一部分 PRD ============== -->
+<h2 id="part1">第一部分：产品需求文档（PRD）</h2>
+
+<!-- 1. 背景与目标 -->
+<h3 id="bg">1. 背景与目标</h3>
+
+<h4>1.1 问题与场景</h4>
+<p>当前企业数据分析存在以下痛点：</p>
+<ul>
+  <li><strong>取数门槛高</strong>：业务人员需依赖数据团队写 SQL 取数，排期长、沟通成本高，无法做到"即问即答"。</li>
+  <li><strong>报告编制繁琐</strong>：周报/月报/经营分析报告需人工找数、手工分析、截图整理，耗时且易出错。</li>
+  <li><strong>洞察提取困难</strong>：仪表板数据丰富，但异常识别、波动归因、趋势解读依赖人工经验，难以规模化。</li>
+</ul>
+
+<h4>1.2 产品定位</h4>
+<p>面向<strong>销售与经营分析场景</strong>的 AI 智能分析 Agent，让业务人员通过自然语言完成数据查询、解读和报告生成，实现"人人都是数据分析师"。</p>
+
+<h4>1.3 参考产品</h4>
+<p>参考阿里云 Quick BI 智能小Q（羚羊）的三大核心 Agent 能力进行设计：</p>
+<table>
+  <tr><th>Quick BI 智能小Q</th><th>本项目对应模块</th><th>核心能力</th></tr>
+  <tr><td>小Q问数 Agent</td><td>智能问数</td><td>自然语言问数、多轮对话、意图澄清、波动归因</td></tr>
+  <tr><td>小Q解读 Agent</td><td>智能解读</td><td>指标异常检测、根因分析、数据洞察生成</td></tr>
+  <tr><td>小Q报告 Agent</td><td>智能报告</td><td>一句话生成分析报告、结构化洞察、可编辑</td></tr>
+</table>
+
+<h4>1.4 目标</h4>
+<ul>
+  <li>用户可用自然语言提问，无需编写 SQL 即可获取销售数据结果。</li>
+  <li>用户可用一句话生成包含指标摘要、趋势分析、异常洞察的结构化报告。</li>
+  <li>输出结果包含可视化图表、数据表格和文字洞察，支持多轮追问深入分析。</li>
+</ul>
+
+<!-- 2. 范围 -->
+<h3 id="scope">2. 范围定义</h3>
+
+<h4>2.1 数据基础</h4>
+<div class="assumption">
+  用户将提供一份销售数据作为数据基础。当前文档基于典型销售数据结构进行设计，实际字段以用户提供的数据为准。<br>
+  <strong>假设的销售数据结构</strong>（待用户确认后调整）：
+  <ul style="margin-top:8px">
+    <li><code>orders</code> 订单表：order_id, order_date, customer_id, product_id, region, channel, quantity, amount, discount</li>
+    <li><code>products</code> 产品表：product_id, product_name, category, subcategory, cost_price, selling_price</li>
+    <li><code>customers</code> 客户表：customer_id, customer_name, region, segment</li>
+  </ul>
+  核心指标：销售额(sales_amount)、销量(quantity)、利润(profit)、客户数(customer_count)；核心维度：时间、地区、产品类别、渠道。
+</div>
+
+<h4>2.2 P0 范围（MVP）</h4>
+<table>
+  <tr><th>模块</th><th>P0 能力</th></tr>
+  <tr>
+    <td>智能问数</td>
+    <td>
+      ① 单数据集自然语言查询 → SQL → 结果返回<br>
+      ② 多轮对话上下文管理（维度/指标/时间继承）<br>
+      ③ 缺失关键槽位时主动澄清<br>
+      ④ 自动选择图表类型并渲染（柱状/折线/饼图/表格）
+    </td>
+  </tr>
+  <tr>
+    <td>智能解读与报告</td>
+    <td>
+      ① 一句话生成结构化分析报告（摘要 + 关键指标 + 趋势 + 洞察）<br>
+      ② 自动识别数据异常并生成文字洞察<br>
+      ③ 报告内容可在对话中追问细化
+    </td>
+  </tr>
+  <tr>
+    <td>可视化输出</td>
+    <td>
+      ① 图表（柱状/折线/饼图/散点）<br>
+      ② 数据表格（支持排序）<br>
+      ③ 文字洞察结论<br>
+      ④ 图表与表格导出为图片/CSV
+    </td>
+  </tr>
+</table>
+
+<h4>2.3 P1 范围（后续迭代）</h4>
+<ul>
+  <li><span class="tag tag-p1">P1</span>波动归因：按维度拆解指标波动贡献度</li>
+  <li><span class="tag tag-p1">P1</span>同环比自动计算与展示</li>
+  <li><span class="tag tag-p1">P1</span>报告模板定制（周报/月报/经营分析）</li>
+  <li><span class="tag tag-p1">P1</span>多数据集关联查询</li>
+  <li><span class="tag tag-p1">P1</span>报告导出为 PDF / Word</li>
+</ul>
+
+<h4>2.4 不包含（Out of Scope）</h4>
+<ul>
+  <li><span class="tag tag-out">Out</span>实时流式数据处理（仅支持批量静态数据）</li>
+  <li><span class="tag tag-out">Out</span>复杂多租户权限体系（MVP 单用户/单数据集）</li>
+  <li><span class="tag tag-out">Out</span>移动端 App</li>
+  <li><span class="tag tag-out">Out</span>自定义 Agent 市场 / 第三方模型市场</li>
+  <li><span class="tag tag-out">Out</span>数据写回与修改操作（仅只读查询）</li>
+</ul>
+
+<!-- 3. 产品模型 -->
+<h3 id="model">3. 产品模型</h3>
+
+<h4>3.1 角色</h4>
+<table>
+  <tr><th>角色</th><th>描述</th><th>核心操作</th></tr>
+  <tr><td>业务用户</td><td>使用 Agent 进行问数和报告生成的最终用户</td><td>提问、查看结果、生成报告、追问</td></tr>
+  <tr><td>数据管理员</td><td>负责上传和管理数据集的人员</td><td>上传数据、配置字段说明、维护知识库</td></tr>
+</table>
+
+<h4>3.2 核心对象</h4>
+<table>
+  <tr><th>对象</th><th>定义</th><th>关键属性</th></tr>
+  <tr><td>数据集 Dataset</td><td>用户提供的销售数据源</td><td>表名、字段、字段类型、字段描述</td></tr>
+  <tr><td>会话 Conversation</td><td>一次多轮对话的完整上下文</td><td>会话ID、消息列表、槽位状态</td></tr>
+  <tr><td>查询 Query</td><td>单轮用户问题及其处理结果</td><td>问题、意图、槽位、SQL、结果</td></tr>
+  <tr><td>分析产物 Artifact</td><td>查询/分析的可视化输出</td><td>类型(chart/table/text)、数据、配置</td></tr>
+  <tr><td>报告 Report</td><td>结构化的分析报告文档</td><td>章节、指标卡片、图表、洞察文本</td></tr>
+</table>
+
+<h4>3.3 意图类型</h4>
+<table>
+  <tr><th>意图</th><th>说明</th><th>示例</th></tr>
+  <tr><td>ask_data 问数</td><td>查询具体数据指标</td><td>"上个月华东区销售额是多少？"</td></tr>
+  <tr><td>interpret 解读</td><td>对数据进行分析解读</td><td>"帮我分析一下本季度销售趋势"</td></tr>
+  <tr><td>generate_report 生成报告</td><td>生成结构化分析报告</td><td>"生成一份10月销售分析报告"</td></tr>
+  <tr><td>clarify 澄清</td><td>系统向用户追问缺失信息</td><td>系统："请问您想查询哪个时间范围？"</td></tr>
+  <tr><td>chat 闲聊</td><td>非数据类的普通对话</td><td>"你好"</td></tr>
+</table>
+
+<!-- 4. 功能需求 - 智能问数 -->
+<h3 id="fr-ask">4. 功能需求 — 智能问数</h3>
+
+<div class="card">
+<h4>FR-A1：数据集选择与加载</h4>
+<p><strong>目的</strong>：用户选择要查询的销售数据集，系统加载其 Schema。</p>
+<ul>
+  <li><strong>触发</strong>：用户进入问数界面，或上传新的销售数据文件。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>系统读取数据文件（CSV/Excel），自动推断字段名与类型。</li>
+      <li>数据管理员可为每个字段补充中文描述（用于 NL2SQL 的 Schema 注入）。</li>
+      <li>系统将数据加载到分析引擎（DuckDB），生成可查询的表。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：数据集就绪，用户可开始提问；界面显示数据集名称与字段概览。</li>
+  <li><strong>异常</strong>：文件格式不支持 → 提示支持的格式；字段解析失败 → 标记异常字段并提示人工确认。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A2：自然语言提问</h4>
+<p><strong>目的</strong>：用户以自然语言输入数据查询需求。</p>
+<ul>
+  <li><strong>触发</strong>：用户在对话框输入问题并发送。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>支持文本输入；提供常用问题快捷入口（如"本月销售额"、"各地区销量对比"）。</li>
+      <li>系统首先进行<strong>意图分类</strong>（ask_data / interpret / generate_report / chat）。</li>
+      <li>若为 chat 意图，直接由对话模型回复，不进入数据分析链路。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：问题被路由到对应的处理链路。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A3：意图识别与槽位抽取</h4>
+<p><strong>目的</strong>：从自然语言中解析查询所需的结构化信息。</p>
+<ul>
+  <li><strong>触发</strong>：意图判定为 ask_data。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>LLM 从用户问题中抽取以下槽位：
+        <table style="margin:8px 0">
+          <tr><th>槽位</th><th>说明</th><th>示例</th></tr>
+          <tr><td>metrics 指标</td><td>要查询的度量</td><td>销售额、销量、利润</td></tr>
+          <tr><td>dimensions 维度</td><td>分组/筛选维度</td><td>地区、产品类别、渠道</td></tr>
+          <tr><td>time_range 时间范围</td><td>查询的时间区间</td><td>上个月、2024年Q3</td></tr>
+          <tr><td>filters 过滤条件</td><td>限定条件</td><td>华东区、电子产品</td></tr>
+          <tr><td>aggregation 聚合方式</td><td>sum/avg/count/topN</td><td>总和、平均、前10</td></tr>
+        </table>
+      </li>
+      <li>时间表达需规范化（"上个月"→ 具体日期区间）。</li>
+      <li>输出结构化 JSON，供后续 NL2SQL 使用。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：得到结构化的查询意图 JSON。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A4：缺失槽位澄清</h4>
+<p><strong>目的</strong>：当关键信息缺失时，主动向用户追问，避免生成错误 SQL。</p>
+<ul>
+  <li><strong>触发</strong>：槽位抽取后，关键槽位（指标或时间范围）为空。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>仅追问<strong>最小必要槽位</strong>，不一次性问所有缺失项。</li>
+      <li>澄清话术应简洁明确，如："请问您想查询哪个时间范围的销售额？"</li>
+      <li>用户回复后，将新信息合并到当前会话槽位，继续后续流程。</li>
+      <li>若用户连续两轮无法提供有效信息，给出查询示例引导。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：槽位补全后进入 NL2SQL；或用户放弃查询。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A5：NL2SQL 生成与校验</h4>
+<p><strong>目的</strong>：将结构化意图转换为可安全执行的 SQL。</p>
+<ul>
+  <li><strong>触发</strong>：槽位完整。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>LLM 接收：数据集 Schema（表名+字段+描述）+ 槽位 JSON + 少量 Few-shot 示例。</li>
+      <li>LLM 输出结构化 JSON：<code>{"sql": "...", "chart_type": "bar", "explanation": "..."}</code>。</li>
+      <li><strong>安全校验</strong>（本地 AST 级规则，不依赖 LLM 自觉）：
+        <ol>
+          <li>仅允许 SELECT 语句，禁止 INSERT/UPDATE/DELETE/DROP。</li>
+          <li>FROM 表名必须在 Schema 白名单内。</li>
+          <li>引用的列名必须在 Schema 白名单内。</li>
+          <li>禁止子查询中出现写操作（递归校验）。</li>
+        </ol>
+      </li>
+      <li>校验失败 → 自动重试（最多 2 次），仍失败则返回错误并展示问题。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：得到可执行的 SQL 或明确的错误提示。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A6：SQL 执行与结果格式化</h4>
+<p><strong>目的</strong>：执行查询并将结果转为前端可展示的结构。</p>
+<ul>
+  <li><strong>触发</strong>：SQL 校验通过。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>在分析引擎（DuckDB）中执行 SQL，设置超时（如 30s）。</li>
+      <li>结果转为 JSON：<code>{"columns": [...], "rows": [[...], ...]}</code>。</li>
+      <li>若结果为空 → 返回空结果提示，并建议调整条件。</li>
+      <li>若结果行数超过阈值（如 1000 行）→ 截断并提示，避免前端渲染压力。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：结构化的查询结果数据。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-A7：多轮对话上下文管理</h4>
+<p><strong>目的</strong>：支持用户基于上一轮结果继续追问，无需重复说明全部条件。</p>
+<ul>
+  <li><strong>触发</strong>：同一会话内的后续提问。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>会话维护一个<strong>槽位状态</strong>（指标、维度、时间、过滤条件）。</li>
+      <li>每轮提问先抽取新槽位，再与上一轮状态合并：
+        <ul>
+          <li>用户明确指定的维度/指标 → 覆盖旧值。</li>
+          <li>用户未提及但上一轮已有的 → 继承。</li>
+          <li>用户说"换个维度"/"加上XX" → 追加或替换。</li>
+        </ul>
+      </li>
+      <li>时间范围继承：若新问题未提时间，沿用上次时间范围。</li>
+      <li>支持"上钻/下钻"语义：如"再按产品类别细分" → 在上一轮维度基础上增加维度。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：用户可通过连续提问逐步深入分析。</li>
+</ul>
+</div>
+
+<!-- 5. 功能需求 - 解读与报告 -->
+<h3 id="fr-report">5. 功能需求 — 智能解读与报告</h3>
+
+<div class="card">
+<h4>FR-B1：一句话生成报告</h4>
+<p><strong>目的</strong>：用户输入主题或时间范围，系统自动生成结构化分析报告。</p>
+<ul>
+  <li><strong>触发</strong>：意图判定为 generate_report，如"生成一份10月销售分析报告"。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>系统根据报告主题，自动规划报告章节（摘要 → 关键指标 → 趋势分析 → 维度拆解 → 异常洞察 → 结论建议）。</li>
+      <li>每个章节调用问数链路获取对应数据，生成图表与洞察。</li>
+      <li>报告以结构化文档形式呈现，各章节可独立展开/收起。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：生成一份包含指标卡片、图表、文字洞察的完整报告。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-B2：自动洞察生成</h4>
+<p><strong>目的</strong>：对查询结果自动生成有价值的数据洞察，而非仅返回原始数据。</p>
+<ul>
+  <li><strong>触发</strong>：每次问数或报告章节生成后。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li><strong>趋势洞察</strong>：识别环比/同比变化方向与幅度。</li>
+      <li><strong>对比洞察</strong>：Top-N 维度成员的排名与占比。</li>
+      <li><strong>异常洞察</strong>：基于统计方法（如 z-score > 2）识别异常值并标注。</li>
+      <li>洞察由 LLM 基于数据结果生成自然语言描述，要求结论有数据支撑。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：每条查询结果附带 1-3 条文字洞察。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-B3：报告追问与细化</h4>
+<p><strong>目的</strong>：用户可对报告中的某个章节或指标进行追问深入。</p>
+<ul>
+  <li><strong>触发</strong>：用户针对报告某部分提问，如"华东区为什么下降？"。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li>系统识别用户追问的章节上下文，继承该章节的指标与时间范围。</li>
+      <li>进入问数链路执行更细粒度的查询，返回新的图表与洞察。</li>
+      <li>追问结果可追加到报告中，或作为独立分析展示。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：报告可交互式深入，而非一次性静态产物。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-B4：报告导出</h4>
+<p><strong>目的</strong>：将生成的报告导出为可分享的文件。</p>
+<ul>
+  <li><strong>触发</strong>：用户点击报告的"导出"按钮。</li>
+  <li><strong>处理规则</strong>：
+    <ul>
+      <li><span class="tag tag-p1">P1</span>支持导出为 PDF / Word（.docx）。</li>
+      <li><span class="tag tag-p0">P0</span>支持导出为 HTML（自包含，含图表）。</li>
+      <li>导出内容包含报告标题、生成时间、所有章节的图表与洞察。</li>
+    </ul>
+  </li>
+  <li><strong>结果</strong>：用户获得可下载的报告文件。</li>
+</ul>
+</div>
+
+<!-- 6. 功能需求 - 可视化 -->
+<h3 id="fr-viz">6. 功能需求 — 可视化输出</h3>
+
+<div class="card">
+<h4>FR-C1：自动图表类型选择</h4>
+<p><strong>目的</strong>：根据查询结果的数据特征，自动选择最合适的图表类型。</p>
+<ul>
+  <li><strong>触发</strong>：查询结果返回后。</li>
+  <li><strong>处理规则</strong>（基于数据结构的规则引擎）：
+    <table style="margin:8px 0">
+      <tr><th>数据特征</th><th>推荐图表</th><th>示例</th></tr>
+      <tr><td>时间维度 + 1 个指标</td><td>折线图</td><td>月度销售额趋势</td></tr>
+      <tr><td>分类维度 + 1 个指标（≤10类）</td><td>柱状图</td><td>各地区销售额</td></tr>
+      <tr><td>分类维度 + 1 个指标（占比场景）</td><td>饼图</td><td>各渠道销售额占比</td></tr>
+      <tr><td>2 个维度 + 1 个指标</td><td>堆叠柱状图 / 分组柱状图</td><td>各地区各品类销售额</td></tr>
+      <tr><td>仅 1 行聚合结果</td><td>指标卡片</td><td>本月总销售额</td></tr>
+      <tr><td>维度数 ≥ 3 或结果行数 > 20</td><td>表格</td><td>详细明细数据</td></tr>
+    </table>
+  </li>
+  <li><strong>结果</strong>：系统返回推荐图表类型及配置，前端渲染。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-C2：图表渲染</h4>
+<p><strong>目的</strong>：将查询结果可视化为交互式图表。</p>
+<ul>
+  <li><strong>支持图表类型</strong>：柱状图、折线图、饼图、散点图、堆叠柱状图、指标卡片。</li>
+  <li><strong>交互能力</strong>：鼠标悬停显示数值、图例切换、坐标轴缩放。</li>
+  <li><strong>样式</strong>：统一配色方案，支持深色/浅色主题。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-C3：表格展示</h4>
+<p><strong>目的</strong>：以表格形式展示明细或多维度数据。</p>
+<ul>
+  <li><strong>功能</strong>：列排序、分页、数值格式化（千分位、百分比、小数位）。</li>
+  <li><strong>触发</strong>：数据不适合图表展示，或用户明确要求看表格。</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>FR-C4：单图表/表格导出</h4>
+<p><strong>目的</strong>：用户可导出单个分析产物。</p>
+<ul>
+  <li>图表导出为 PNG 图片。</li>
+  <li>表格导出为 CSV 文件。</li>
+</ul>
+</div>
+
+<!-- 7. 共享规则 -->
+<h3 id="shared">7. 共享规则与异常处理</h3>
+
+<h4>7.1 SQL 安全规则</h4>
+<ul>
+  <li>所有 SQL 必须通过 AST 级白名单校验，仅允许只读 SELECT。</li>
+  <li>禁止访问系统表与未授权表。</li>
+  <li>执行超时强制中断，防止恶意长查询。</li>
+</ul>
+
+<h4>7.2 响应结构规范</h4>
+<p>所有 Agent 返回统一的结构化响应，前端按类型渲染：</p>
+<pre><code>{
+  "intent": "ask_data",
+  "answer": "10月华东区销售额为 1,250 万元，环比增长 8.3%。",
+  "artifacts": [
+    {"type": "chart", "chart_type": "bar", "data": {...}, "config": {...}},
+    {"type": "table", "columns": [...], "rows": [...]}
+  ],
+  "insights": ["华东区销售额创近6个月新高", "主要增长来自电子产品品类"],
+  "sql": "SELECT ...",
+  "slot_state": {...}
+}</code></pre>
+
+<h4>7.3 异常处理矩阵</h4>
+<table>
+  <tr><th>异常场景</th><th>系统行为</th><th>用户提示</th></tr>
+  <tr><td>LLM 调用失败/超时</td><td>重试 1 次，仍失败则降级</td><td>"AI 服务暂时不可用，请稍后重试"</td></tr>
+  <tr><td>SQL 校验失败</td><td>自动重试 2 次，仍失败则返回错误</td><td>"无法理解您的问题，请换一种说法"</td></tr>
+  <tr><td>SQL 执行超时</td><td>中断查询</td><td>"查询耗时过长，请缩小范围"</td></tr>
+  <tr><td>查询结果为空</td><td>返回空状态</td><td>"未找到匹配数据，请尝试调整筛选条件"</td></tr>
+  <tr><td>数据文件读取失败</td><td>中止加载</td><td>"文件格式不支持或已损坏，请检查后重新上传"</td></tr>
+  <tr><td>槽位连续缺失</td><td>提供示例引导</td><td>"您可以这样问：上个月各地区的销售额是多少？"</td></tr>
+</table>
+
+<h4>7.4 数据隐私</h4>
+<ul>
+  <li>LLM 调用时仅传递 Schema（字段名+描述）和聚合结果，不传递原始明细行（除非用户明确要求明细）。</li>
+  <li>API 密钥仅从环境变量读取，不硬编码、不打印日志。</li>
+  <li>日志中对 SQL 结果做脱敏（仅记录行数与列名）。</li>
+</ul>
+
+<!-- 8. 待确认问题 -->
+<h3 id="open">8. 待确认问题（Open Questions）</h3>
+<div class="assumption">
+  <ol>
+    <li><strong>销售数据结构</strong>：用户将提供的销售数据具体包含哪些表和字段？当前基于典型结构假设，需确认后调整 Schema 与示例。</li>
+    <li><strong>LLM 选型</strong>：使用哪个大模型？（DeepSeek / Qwen / OpenAI / 其他）需确认 API 可访问性与成本。</li>
+    <li><strong>部署方式</strong>：本地运行还是服务器部署？是否需要 Docker 化？</li>
+    <li><strong>前端形态</strong>：MVP 阶段使用 Streamlit 快速搭建，还是需要独立的 React 前端？</li>
+    <li><strong>并发与用户量</strong>：MVP 预计多少用户同时使用？影响是否需要引入会话管理与限流。</li>
+  </ol>
+</div>
+
+<hr class="section-divider">
+
+<!-- ============== 第二部分 技术方案 ============== -->
+<h2 id="part2">第二部分：技术方案</h2>
+
+<!-- 1. 总体架构 -->
+<h3 id="arch">1. 总体架构</h3>
+
+<p>系统采用分层架构，自上而下分为<strong>交互层、API 网关层、Agent 编排层、能力服务层、数据存储层</strong>。</p>
+
+<div class="flow-diagram">┌──────────────────────────────────────────────────────────────┐
+│                     交互层 (Frontend)                        │
+│         对话界面 │ 报告查看器 │ 图表渲染 (ECharts)            │
+└───────────────────────────┬──────────────────────────────────┘
+                            │  HTTP / SSE (流式响应)
+┌───────────────────────────▼──────────────────────────────────┐
+│                  API 网关层 (FastAPI)                         │
+│   路由分发 │ 会话管理 │ 鉴权 │ 流式响应 │ 异常处理            │
+└───────────────────────────┬──────────────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────────────┐
+│                 Agent 编排层 (LangGraph)                      │
+│  ┌──────────┐  ┌────────────┐  ┌──────────┐  ┌───────────┐  │
+│  │ 意图路由  │→│ 问数 Agent  │  │ 解读Agent │  │ 报告Agent │  │
+│  │ Router   │  │ AskAgent   │  │InsightAg │  │ReportAgent│  │
+│  └──────────┘  └─────┬──────┘  └─────┬────┘  └─────┬─────┘  │
+└──────────────────────┼───────────────┼─────────────┼────────┘
+                       │               │             │
+┌──────────────────────▼───────────────▼─────────────▼────────┐
+│                    能力服务层 (Services)                      │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────────┐  │
+│  │ NL2SQL   │ │ 洞察引擎  │ │ 可视化   │ │  报告组装     │  │
+│  │ Engine   │ │ Insight  │ │  Viz     │ │  Report       │  │
+│  └──────────┘ └──────────┘ └──────────┘ └───────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+                            │
+┌───────────────────────────▼──────────────────────────────────┐
+│                   数据存储层 (Storage)                        │
+│   DuckDB (分析查询) │ SQLite (元数据/会话) │ 文件系统 (产物)   │
+└──────────────────────────────────────────────────────────────┘</div>
+
+<h4>架构设计原则</h4>
+<ul>
+  <li><strong>Agent 显式状态</strong>：使用 LangGraph 管理会话状态（槽位、历史消息），而非隐式上下文拼接。</li>
+  <li><strong>能力与编排分离</strong>：NL2SQL、洞察、可视化等作为独立 Service，Agent 仅负责编排调用，便于复用与测试。</li>
+  <li><strong>安全前置</strong>：SQL 执行前必经 AST 校验层，不依赖 LLM 自觉。</li>
+  <li><strong>流式响应</strong>：通过 SSE 向前端流式输出文字与产物，提升交互体验。</li>
+</ul>
+
+<!-- 2. 技术栈 -->
+<h3 id="stack">2. 技术栈选型</h3>
+
+<table>
+  <tr><th>层级</th><th>技术选型</th><th>选型理由</th></tr>
+  <tr>
+    <td>编程语言</td>
+    <td>Python 3.11+</td>
+    <td>用户指定；生态丰富，数据分析与 AI 库齐全</td>
+  </tr>
+  <tr>
+    <td>Web 框架</td>
+    <td>FastAPI</td>
+    <td>异步高性能、自动生成 API 文档、原生支持 SSE 流式响应</td>
+  </tr>
+  <tr>
+    <td>Agent 编排</td>
+    <td>LangGraph</td>
+    <td>显式状态图、可控的多轮流程、支持条件分支与循环（优于纯 LangChain Chain）</td>
+  </tr>
+  <tr>
+    <td>LLM 接入</td>
+    <td>OpenAI 兼容接口（requests 封装）</td>
+    <td>不绑定特定厂商；DeepSeek/Qwen 均兼容 OpenAI 协议；最小依赖</td>
+  </tr>
+  <tr>
+    <td>分析查询引擎</td>
+    <td>DuckDB</td>
+    <td>嵌入式、零配置、对 CSV/Parquet 直接执行 SQL、分析查询性能优异</td>
+  </tr>
+  <tr>
+    <td>元数据存储</td>
+    <td>SQLite</td>
+    <td>存储会话、数据集配置等轻量元数据，无需独立数据库服务</td>
+  </tr>
+  <tr>
+    <td>数据处理</td>
+    <td>pandas, numpy</td>
+    <td>数据清洗、聚合、统计计算的事实标准</td>
+  </tr>
+  <tr>
+    <td>SQL 解析校验</td>
+    <td>sqlglot</td>
+    <td>纯 Python SQL AST 解析，支持多方言，便于白名单校验</td>
+  </tr>
+  <tr>
+    <td>前端图表</td>
+    <td>ECharts</td>
+    <td>交互丰富、中文支持好、图表类型齐全；前端渲染减轻后端压力</td>
+  </tr>
+  <tr>
+    <td>后端图表（导出用）</td>
+    <td>matplotlib / plotly</td>
+    <td>matplotlib 用于 PNG 导出；plotly 用于交互式 HTML 导出</td>
+  </tr>
+  <tr>
+    <td>报告模板</td>
+    <td>Jinja2</td>
+    <td>成熟的模板引擎，用于 HTML 报告组装</td>
+  </tr>
+  <tr>
+    <td>PDF 导出</td>
+    <td>weasyprint</td>
+    <td>HTML → PDF，支持 CSS 样式</td>
+  </tr>
+  <tr>
+    <td>Word 导出</td>
+    <td>python-docx</td>
+    <td>生成 .docx 报告</td>
+  </tr>
+  <tr>
+    <td>前端（MVP）</td>
+    <td>Streamlit 或 FastAPI + 单页 HTML</td>
+    <td><span class="assumption">待确认：Streamlit 可快速出 Demo；正式产品建议独立前端</span></td>
+  </tr>
+</table>
+
+<!-- 3. 模块级设计 -->
+<h3 id="design">3. 模块级设计</h3>
+
+<h4>3.1 意图路由（Intent Router）</h4>
+<p>作为入口的第一个节点，决定请求走向哪个 Agent。</p>
+<ul>
+  <li><strong>输入</strong>：用户问题 + 会话历史。</li>
+  <li><strong>方法</strong>：LLM 输出结构化意图分类（ask_data / interpret / generate_report / chat）。</li>
+  <li><strong>路由</strong>：
+    <ul>
+      <li><code>ask_data</code> → 问数 Agent</li>
+      <li><code>interpret</code> → 解读 Agent</li>
+      <li><code>generate_report</code> → 报告 Agent</li>
+      <li><code>chat</code> → 直接对话回复</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>3.2 问数 Agent（AskAgent）</h4>
+<p>核心链路：意图 → 槽位 → 澄清判断 → NL2SQL → 校验 → 执行 → 可视化。</p>
+<div class="flow-diagram">用户问题
+   │
+   ▼
+[槽位抽取] ──► 槽位状态合并（继承上一轮）
+   │
+   ▼
+关键槽位缺失？ ──是──► [澄清回复]
+   │否
+   ▼
+[NL2SQL 生成]  (Schema + 槽位 + Few-shot)
+   │
+   ▼
+[SQL AST 校验] ──失败──► 重试(≤2) ──► 错误回复
+   │通过
+   ▼
+[DuckDB 执行] ──超时/异常──► 错误回复
+   │成功
+   ▼
+[结果格式化] ──► [自动洞察] ──► [图表选择] ──► 结构化响应</div>
+
+<h4>3.3 NL2SQL 引擎</h4>
+<ul>
+  <li><strong>Prompt 构造</strong>：
+    <ul>
+      <li>System：角色设定 + SQL 生成规则（仅 SELECT、必须用白名单字段、时间过滤写法）。</li>
+      <li>Schema：表结构（表名、字段名、类型、中文描述）。</li>
+      <li>Few-shot：3-5 个"问题 → SQL"示例（覆盖聚合、分组、时间过滤、TopN）。</li>
+      <li>User：当前问题 + 槽位 JSON。</li>
+    </ul>
+  </li>
+  <li><strong>输出约束</strong>：要求 LLM 输出 JSON，包含 <code>sql</code>、<code>chart_type</code>、<code>explanation</code>。</li>
+  <li><strong>校验</strong>：sqlglot 解析 AST，递归检查仅含 SELECT、表/列在白名单。</li>
+</ul>
+
+<h4>3.4 洞察引擎（Insight Engine）</h4>
+<ul>
+  <li><strong>统计计算层</strong>（不依赖 LLM）：
+    <ul>
+      <li>环比/同比：(本期 - 上期) / 上期。</li>
+      <li>Top-N 占比：Top-N 之和 / 总计。</li>
+      <li>异常检测：z-score = (x - μ) / σ，|z| > 2 标记异常。</li>
+    </ul>
+  </li>
+  <li><strong>叙事生成层</strong>：将统计结果交由 LLM 生成自然语言洞察，要求"结论 + 数据支撑"。</li>
+</ul>
+
+<h4>3.5 可视化引擎（Viz Engine）</h4>
+<ul>
+  <li><strong>图表选择</strong>：基于数据行列特征的规则引擎（见 FR-C1）。</li>
+  <li><strong>输出</strong>：返回 ECharts 配置 JSON（前端渲染）+ matplotlib 图（导出用）。</li>
+  <li><strong>配色</strong>：统一色板，保证图表风格一致。</li>
+</ul>
+
+<h4>3.6 报告 Agent（ReportAgent）</h4>
+<ul>
+  <li><strong>章节规划</strong>：LLM 根据报告主题生成章节大纲。</li>
+  <li><strong>逐章生成</strong>：每个章节调用问数 Agent 获取数据 + 洞察引擎生成洞察 + 可视化引擎生成图表。</li>
+  <li><strong>组装</strong>：Jinja2 模板将各章节内容拼装为 HTML 报告。</li>
+</ul>
+
+<!-- 4. 核心数据流 -->
+<h3 id="flow">4. 核心数据流</h3>
+
+<h4>4.1 问数数据流</h4>
+<div class="flow-diagram">[用户] ──问题──► [FastAPI /chat]
+                         │
+                         ▼
+                  [Intent Router]
+                         │ ask_data
+                         ▼
+                  [AskAgent 状态机]
+                    │     │     │
+                    ▼     ▼     ▼
+            [槽位抽取] [历史合并] [澄清判断]
+                    │
+                    ▼
+            [NL2SQL Engine] ◄── Schema + Few-shot
+                    │
+                    ▼
+            [SQL 校验 (sqlglot)]
+                    │ 通过
+                    ▼
+            [DuckDB 执行]
+                    │
+                    ▼
+            [Insight Engine] ──► 文字洞察
+                    │
+                    ▼
+            [Viz Engine] ──► 图表配置
+                    │
+                    ▼
+            [统一响应 JSON] ◄── SSE 流式 ──► [前端渲染]</div>
+
+<h4>4.2 报告生成数据流</h4>
+<div class="flow-diagram">[用户] ──"生成10月销售报告"──► [/chat]
+                                      │
+                                      ▼
+                              [ReportAgent]
+                                      │
+                         ┌────────────┼────────────┐
+                         ▼            ▼            ▼
+                   [章节1:摘要]  [章节2:指标]  [章节3:趋势] ...
+                         │            │            │
+                         ▼            ▼            ▼
+                   调用 AskAgent 获取各章节数据
+                         │            │            │
+                         ▼            ▼            ▼
+                   Insight + Viz 生成洞察与图表
+                         │            │            │
+                         └────────────┼────────────┘
+                                      ▼
+                            [Jinja2 模板组装]
+                                      │
+                                      ▼
+                            [HTML 报告] ──► 前端展示 / 导出</div>
+
+<!-- 5. 关键技术决策 -->
+<h3 id="decisions">5. 关键技术决策</h3>
+
+<div class="card">
+<h4>决策 1：NL2SQL 不做模型微调，采用 Prompt + Schema + Few-shot</h4>
+<p><strong>理由</strong>：MVP 阶段数据量与标注成本有限；通用大模型 + 良好 Schema 描述 + Few-shot 示例已能覆盖大多数销售分析查询。后续可根据实际 badcase 积累微调语料。</p>
+<p><strong>保障</strong>：本地 AST 校验兜底，错误 SQL 不会执行；失败自动重试。</p>
+</div>
+
+<div class="card">
+<h4>决策 2：使用 DuckDB 作为分析引擎，而非独立数据库服务</h4>
+<p><strong>理由</strong>：销售数据通常为 CSV/Excel 文件，DuckDB 可直接对文件执行 SQL，无需建库建表运维；分析查询性能优于 SQLite；嵌入式部署简单。</p>
+<p><strong>适用边界</strong>：单表/少量表、GB 级以内数据。若后续数据量增大或需多表复杂关联，可迁移至 PostgreSQL/ClickHouse。</p>
+</div>
+
+<div class="card">
+<h4>决策 3：Agent 编排使用 LangGraph 而非纯 LangChain Chain</h4>
+<p><strong>理由</strong>：问数链路存在条件分支（是否澄清、校验是否重试）和循环（重试），LangGraph 的状态图模型更适合表达此类流程，状态显式可追溯，便于调试。</p>
+</div>
+
+<div class="card">
+<h4>决策 4：图表渲染以前端 ECharts 为主，后端 matplotlib 为辅</h4>
+<p><strong>理由</strong>：ECharts 交互体验好、渲染性能佳，适合在线展示；matplotlib 用于生成 PNG 供导出。后端不承担渲染压力。</p>
+</div>
+
+<div class="card">
+<h4>决策 5：LLM 调用走 OpenAI 兼容 HTTP 接口，不绑定厂商 SDK</h4>
+<p><strong>理由</strong>：DeepSeek、Qwen 等国产模型均提供 OpenAI 兼容接口，用 requests 封装最小调用层可灵活切换模型，避免依赖特定 SDK 的版本与接口变动。</p>
+</div>
+
+<!-- 6. 项目结构 -->
+<h3 id="structure">6. 项目结构</h3>
+<pre><code>AIBIdata/
+├── app/
+│   ├── main.py                  # FastAPI 入口，注册路由与启动事件
+│   ├── api/
+│   │   ├── chat.py              # /chat 对话接口（SSE 流式）
+│   │   ├── dataset.py           # 数据集上传/管理接口
+│   │   └── report.py            # 报告生成/导出接口
+│   ├── core/
+│   │   ├── config.py            # 配置（从环境变量读取密钥等）
+│   │   └── security.py          # SQL 校验、脱敏工具
+│   ├── agents/
+│   │   ├── graph.py             # LangGraph 状态图定义
+│   │   ├── router.py            # 意图路由节点
+│   │   ├── ask_agent.py         # 问数 Agent 节点
+│   │   ├── insight_agent.py     # 解读 Agent 节点
+│   │   └── report_agent.py      # 报告 Agent 节点
+│   ├── services/
+│   │   ├── nl2sql.py            # NL2SQL 引擎（Prompt 构造 + 解析）
+│   │   ├── sql_validator.py     # SQL AST 校验（sqlglot）
+│   │   ├── insight.py           # 洞察引擎（统计 + LLM 叙事）
+│   │   ├── visualization.py     # 图表选择与配置生成
+│   │   ├── report_builder.py    # 报告章节规划与组装
+│   │   └── llm_client.py        # LLM 调用封装（OpenAI 兼容）
+│   ├── models/                  # Pydantic 数据模型
+│   │   ├── schemas.py           # 请求/响应结构
+│   │   └── state.py             # 会话状态、槽位模型
+│   └── utils/
+│       ├── time_parser.py       # 时间表达规范化（"上个月"→日期）
+│       └── formatters.py        # 数值格式化
+├── data/                        # 销售数据文件（用户提供）
+├── prompts/                     # LLM Prompt 模板（Jinja2）
+│   ├── intent_router.j2
+│   ├── slot_extraction.j2
+│   ├── nl2sql.j2
+│   └── insight.j2
+├── templates/                   # 报告 HTML 模板
+│   └── report.html
+├── static/                      # 前端静态资源（MVP 可省略）
+├── tests/                       # 单元测试与集成测试
+├── requirements.txt
+├── .env.example                 # 环境变量示例（不含真实密钥）
+└── README.md</code></pre>
+
+<!-- 7. 实施路线 -->
+<h3 id="roadmap">7. 实施路线</h3>
+
+<table>
+  <tr><th>阶段</th><th>目标</th><th>关键交付物</th></tr>
+  <tr>
+    <td><strong>阶段 1：数据与 Schema</strong></td>
+    <td>加载销售数据，搭建可查询的数据层</td>
+    <td>DuckDB 数据加载、Schema 自动推断、字段描述配置</td>
+  </tr>
+  <tr>
+    <td><strong>阶段 2：问数核心链路</strong></td>
+    <td>实现自然语言 → SQL → 结果 → 表格</td>
+    <td>意图路由、槽位抽取、NL2SQL、SQL 校验执行、表格展示</td>
+  </tr>
+  <tr>
+    <td><strong>阶段 3：多轮与可视化</strong></td>
+    <td>支持上下文追问与图表展示</td>
+    <td>会话状态管理、澄清流程、图表自动选择与渲染</td>
+  </tr>
+  <tr>
+    <td><strong>阶段 4：洞察与报告</strong></td>
+    <td>实现自动洞察与报告生成</td>
+    <td>洞察引擎、报告章节规划、报告组装与展示</td>
+  </tr>
+  <tr>
+    <td><strong>阶段 5：体验优化</strong></td>
+    <td>流式响应、导出、异常处理完善</td>
+    <td>SSE 流式输出、报告/图表导出、全链路异常处理</td>
+  </tr>
+</table>
+
+<hr class="section-divider">
+
+<div class="note">
+  <strong>说明</strong>：本文档为 MVP 阶段的产品需求与技术方案草案。销售数据的具体结构、LLM 选型、前端形态等待确认项标注为 <code>[Assumption, TBD]</code>，将在用户提供数据后迭代更新。
+</div>
+
+</div>
+
+</body>
+</html>

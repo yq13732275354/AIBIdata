@@ -1,0 +1,16 @@
+# 环境变量（含真实 API Key，禁止提交）
+.env
+
+# 本地数据与生成产物（可用 scripts/import_data.py 重建）
+data/
+reports/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 系统 / 工具
+.DS_Store
+.screenshots/
+.trae-html-share-packages/

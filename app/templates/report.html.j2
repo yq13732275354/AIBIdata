@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0B0F14; --panel:#131A22; --panel2:#0F161E; --line:#222C38;
+    --text:#E6EDF5; --dim:#8B98A8; --accent:#4F8CFF; --up:#22C55E; --down:#EF4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,#14223a 0%,var(--bg) 55%) no-repeat,var(--bg);
+       color:var(--text);font:14px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+  .wrap{max-width:1160px;margin:0 auto;padding:40px 24px 72px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}
+  h1{font-size:28px;margin:0 0 8px;letter-spacing:.5px}
+  .meta{color:var(--dim);font-size:13px}
+  .tag{display:inline-block;padding:3px 10px;border:1px solid var(--line);border-radius:999px;
+       color:var(--dim);font-size:12px;margin-left:8px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0 32px}
+  .kpi{background:linear-gradient(180deg,#151E28,#111820);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px}
+  .kpi .l{color:var(--dim);font-size:12.5px}
+  .kpi .v{font-size:26px;font-weight:650;margin:8px 0 6px;letter-spacing:.3px}
+  .kpi .d{font-size:12.5px}
+  .kpi .d.up{color:var(--up)} .kpi .d.down{color:var(--down)} .kpi .d.flat{color:var(--dim)}
+  .kpi .s{color:var(--dim);font-size:11.5px;margin-top:4px}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px;margin-bottom:22px}
+  section h2{font-size:16px;margin:0 0 4px;font-weight:600}
+  section p.desc{color:var(--dim);font-size:12.5px;margin:0 0 14px}
+  .chart{height:320px;width:100%}
+  table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}
+  th{color:var(--dim);font-weight:500;font-size:12px}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{max-height:360px;overflow:auto}
+  .insights{background:linear-gradient(135deg,rgba(79,140,255,.14),rgba(34,211,238,.06));
+             border:1px solid rgba(79,140,255,.35);border-radius:16px;padding:20px;margin-bottom:22px}
+  .insights h2{font-size:15px;margin:0 0 10px}
+  .insights li{margin:6px 0;color:#D3DEEA}
+  details{margin-top:10px}
+  summary{cursor:pointer;color:var(--dim);font-size:12px}
+  pre{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;
+      overflow:auto;font-size:12px;color:#9FD5FF;white-space:pre-wrap;word-break:break-all}
+  footer{color:var(--dim);font-size:12px;text-align:center;margin-top:40px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>{{ title }}</h1>
+      <div class="meta">生成时间 {{ generated_at }}<span class="tag">数据源 · DuckDB 本地</span><span class="tag">{{ period }}</span></div>
+    </div>
+  </header>
+
+  <div class="kpis">
+    {% for k in kpis %}
+    <div class="kpi">
+      <div class="l">{{ k.label }}</div>
+      <div class="v">{{ k.value }}</div>
+      <div class="d {{ k.kind }}">{{ k.delta }}</div>
+      <div class="s">{{ k.sub }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if insights %}
+  <div class="insights">
+    <h2>关键洞察</h2>
+    <ul>
+      {% for i in insights %}<li>{{ i }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% for s in sections %}
+  <section>
+    <h2>{{ s.title }}</h2>
+    <p class="desc">{{ s.desc }}</p>
+    <div class="chart" id="chart-{{ loop.index }}"></div>
+    <details>
+      <summary>查看数据明细（{{ s.rows|length }} 行）</summary>
+      <div class="scroll">
+        <table>
+          <thead><tr>{% for c in s.columns %}<th>{{ c.label }}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for r in s.rows %}
+            <tr>
+              {% for c in s.columns %}
+                {% if c.format == 'currency' %}<td class="num">{{ r[loop.index0] | fmt_cur }}</td>
+                {% elif c.format == 'int' %}<td class="num">{{ r[loop.index0] | fmt_int }}</td>
+                {% elif c.format == 'percent' %}<td class="num">{{ r[loop.index0] | fmt_pct }}</td>
+                {% else %}<td>{{ r[loop.index0] }}</td>{% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details>
+      <summary>查看 SQL</summary>
+      <pre>{{ s.sql }}</pre>
+    </details>
+  </section>
+  {% endfor %}
+
+  <footer>由本地智能问数 Agent 生成 · 所有数值取自 DuckDB 实算 · 缺失口径会显式标注，不做推算</footer>
+</div>
+
+<script>
+  const SECTIONS = {{ sections_json }};
+  function fmtMoney(v){
+    if(v===null||v===undefined) return '—';
+    const s = v<0?'-':''; v=Math.abs(v);
+    if(v>=1e8) return s+(v/1e8).toFixed(2)+' 亿';
+    if(v>=1e4) return s+(v/1e4).toFixed(1)+' 万';
+    return s+v.toFixed(0);
+  }
+  function fmtPct(v){ return v===null||v===undefined?'—':(v*100).toFixed(1)+'%'; }
+  SECTIONS.forEach(function(s, i){
+    const el = document.getElementById('chart-'+(i+1));
+    if(!el || !s.chart) { if(el) el.style.height='0px'; return; }
+    const opt = s.chart;
+    const box = echarts.init(el, null, {renderer:'canvas'});
+    // 坐标轴数值格式化（后端只给原始数，格式化放在前端）
+    const fmtScale = function(v){ return fmtMoney(v); };
+    if(opt.yAxis){
+      const apply = function(ax){
+        ax.axisLabel = ax.axisLabel || {};
+        ax.axisLabel.formatter = fmtScale;
+      };
+      Array.isArray(opt.yAxis) ? opt.yAxis.forEach(apply) : apply(opt.yAxis);
+    }
+    if(opt.series){
+      opt.series.forEach(function(sr){
+        sr.label = sr.label || {};
+        if(sr.type==='line' && sr.yAxisIndex===1) sr.label.show = false;
+      });
+    }
+    if(opt.tooltip && opt.tooltip.formatter===undefined){
+      opt.tooltip.valueFormatter = fmtMoney;
+    }
+    box.setOption(opt);
+    window.addEventListener('resize', function(){ box.resize(); });
+  });
+</script>
+</body>
+</html>

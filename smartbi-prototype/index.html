@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作台 · SmartBI 智能分析</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body data-page="dashboard">
+
+<!-- ============ Sidebar Nav (frozen, identical on every page) ============ -->
+<aside class="app-nav">
+  <div class="brand">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+    </div>
+    <h1>Smart<span>BI</span></h1>
+  </div>
+
+  <div class="nav-section">
+    <div class="label">主菜单</div>
+    <a class="nav-item" data-nav="dashboard" href="index.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>工作台</span>
+    </a>
+    <a class="nav-item" data-nav="datasources" href="datasources.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据源</span>
+    </a>
+    <a class="nav-item" data-nav="chat" href="chat.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>智能问数</span>
+      <span class="badge">NEW</span>
+    </a>
+    <a class="nav-item" data-nav="themes" href="themes.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>分析主题</span>
+    </a>
+    <a class="nav-item" data-nav="tasks" href="tasks.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>AI 任务</span>
+    </a>
+  </div>
+
+  <div class="nav-footer">
+    <div class="user-card">
+      <div class="avatar">YQ</div>
+      <div class="user-info">
+        <div class="name">余强</div>
+        <div class="role">数据分析师</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ============ Main Content ============ -->
+<div class="app-content">
+  <header class="topbar">
+    <div class="page-title">
+      <span class="crumb">SmartBI</span> / 工作台
+    </div>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input placeholder="搜索数据集、分析主题、历史问答...">
+      </div>
+      <button class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Welcome + AI quick entry -->
+    <div class="card fade-in" style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(6,182,212,.08));border-color:rgba(59,130,246,.3);margin-bottom:20px">
+      <div class="flex-between">
+        <div>
+          <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">下午好，余强 👋</h2>
+          <p style="color:var(--text-sub);font-size:13px">今天是 2026 年 11 月 1 日，销售数据已更新至 2025 年 12 月。有什么想分析的？</p>
+        </div>
+        <a href="chat.html" class="btn btn-primary" style="padding:12px 22px;font-size:14px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+          开始智能问数
+        </a>
+      </div>
+      <div class="chip-list mt-16">
+        <div class="chip">📈 本月各平台销售额对比</div>
+        <div class="chip">🌍 哪些国家销售额增长最快？</div>
+        <div class="chip">📊 卫浴品类的销售趋势</div>
+        <div class="chip">🔥 销量 Top10 品类</div>
+      </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-4 mb-24">
+      <div class="metric-card fade-in">
+        <div class="icon-box" style="background:var(--primary-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="metric-value" id="kpiAmount">—</div>
+        <div class="metric-label" id="kpiAmountLabel">总交易额（2024-2025）</div>
+        <div class="metric-delta" id="kpiAmountDelta" style="color:var(--text-mute)">
+          <span style="font-size:11px">加载中…</span>
+        </div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.05s">
+        <div class="icon-box" style="background:var(--accent-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <div class="metric-value" id="kpiQty">—</div>
+        <div class="metric-label" id="kpiQtyLabel">销量（2025）</div>
+        <div class="metric-delta" id="kpiQtyDelta" style="color:var(--text-mute)">
+          <span style="font-size:11px">加载中…</span>
+        </div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.1s">
+        <div class="icon-box" style="background:rgba(16,185,129,.12)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="metric-value" id="kpiCountries">—</div>
+        <div class="metric-label">覆盖国家/地区</div>
+        <div class="metric-delta" style="color:var(--text-mute)">
+          <span style="font-size:11px" id="kpiCountriesSub">加载中…</span>
+        </div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.15s">
+        <div class="icon-box" style="background:rgba(245,158,11,.12)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="metric-value" id="kpiRows">—</div>
+        <div class="metric-label">数据行数</div>
+        <div class="metric-delta" style="color:var(--success)">
+          <span class="pulse-dot"></span> 本地 DuckDB 已就绪
+        </div>
+      </div>
+    </div>
+
+    <!-- Two columns: Trend chart + Platform breakdown -->
+    <div class="grid grid-2 mb-24">
+      <!-- Sales trend -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">销售额月度趋势</div>
+            <div class="card-sub" id="trendSub">2025 各月销售额 + 同比（单位 EUR）</div>
+          </div>
+        </div>
+        <div id="trendChart" style="width:100%;height:268px"></div>
+      </div>
+
+      <!-- Platform breakdown -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">平台销售额结构</div>
+            <div class="card-sub">2025 年各平台销售额占比</div>
+          </div>
+        </div>
+        <div id="platformChart" style="width:100%;height:268px"></div>
+      </div>
+    </div>
+
+    <!-- Quick actions + Recent -->
+    <div class="grid grid-2">
+      <!-- Quick entries -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">快捷入口</div>
+        </div>
+        <div class="grid grid-3">
+          <a href="datasources.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:var(--primary-soft);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">上传数据</div>
+          </a>
+          <a href="themes.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:var(--accent-soft);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">分析主题</div>
+          </a>
+          <a href="chat.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:rgba(16,185,129,.12);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">智能问数</div>
+          </a>
+          <a href="tasks.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:rgba(245,158,11,.12);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">生成报告</div>
+          </a>
+          <a href="themes.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:rgba(139,92,246,.12);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">波动归因</div>
+          </a>
+          <a href="datasources.html" class="card" style="text-align:center;padding:20px 12px;cursor:pointer;border-color:var(--border)">
+            <div class="icon-box" style="background:rgba(236,72,153,.12);margin:0 auto 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div style="font-size:13px;font-weight:500">数据管理</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent AI tasks -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">最近问数</div>
+          <a href="tasks.html" style="font-size:12px;color:var(--primary)">查看全部 →</a>
+        </div>
+        <div id="recentList" style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:12px;color:var(--text-mute);font-size:12px">加载中…</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="nav-active.js"></script>
+<script>
+/* ============ 格式化 ============ */
+function fmtNum(v){
+  if(v===null||v===undefined) return '—';
+  if(typeof v!=='number') return v;
+  const s=v<0?'-':''; v=Math.abs(v);
+  if(v>=1e8) return s+(v/1e8).toFixed(2)+' 亿';
+  if(v>=1e4) return s+(v/1e4).toFixed(1)+' 万';
+  return s+v.toLocaleString('en-US',{maximumFractionDigits:2});
+}
+function fmtInt(v){
+  if(v===null||v===undefined) return '—';
+  return typeof v==='number' ? Math.round(v).toLocaleString('en-US') : v;
+}
+function fmtPct(v,signed){
+  if(v===null||v===undefined) return '—';
+  const p=v*100;
+  return (signed&&p>0?'+':'')+p.toFixed(1)+'%';
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function relTime(ts){
+  const d=(Date.now()/1000)-ts;
+  if(d<60) return '刚刚';
+  if(d<3600) return Math.floor(d/60)+' 分钟前';
+  if(d<86400) return Math.floor(d/3600)+' 小时前';
+  if(d<86400*7) return Math.floor(d/86400)+' 天前';
+  return new Date(ts*1000).toLocaleDateString('zh-CN');
+}
+function colorOf(v){return v>0?'var(--success)':(v<0?'var(--danger)':'var(--text-mute)');}
+
+/* 给后端返回的纯 JSON option 补上前端格式化 */
+function fmtFor(col){
+  if(col.format==='currency') return v=>fmtNum(v)+' EUR';
+  if(col.format==='percent') return v=>fmtPct(v,true);
+  if(col.format==='int') return fmtInt;
+  return v=>v;
+}
+function patchChart(opt, cols){
+  if(!opt) return null;
+  const money=cols.some(c=>c.format==='currency');
+  const pct=cols.some(c=>c.format==='percent');
+  const axes=Array.isArray(opt.yAxis)?opt.yAxis:(opt.yAxis?[opt.yAxis]:[]);
+  axes.forEach((ax,i)=>{
+    ax.axisLabel=ax.axisLabel||{};
+    ax.axisLabel.formatter = (i===1&&pct) ? (v=>fmtPct(v,true)) : (money?fmtNum:fmtInt);
+  });
+  const byName={};
+  cols.forEach(c=>{ byName[c.label]=fmtFor(c); });
+  if(opt.tooltip){
+    opt.tooltip.valueFormatter = (v,params)=>{
+      const name = params && (params.seriesName || (Array.isArray(params)&&params[0]&&params[0].seriesName));
+      const f = name && byName[name];
+      return f ? f(v) : (money?fmtNum(v):fmtInt(v));
+    };
+  }
+  return opt;
+}
+function mount(id, opt){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(!opt){el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text-mute);font-size:12px">暂无数据</div>';return;}
+  const chart=echarts.init(el,null,{renderer:'canvas'});
+  chart.setOption(opt);
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+/* ============ 拉真实数据 ============ */
+(async ()=>{
+  try{
+    const [ov, dim] = await Promise.all([
+      fetch('/api/overview').then(r=>r.json()),
+      fetch('/api/dimensions').then(r=>r.json()),
+    ]);
+
+    const k=ov.kpi;
+    document.getElementById('kpiAmount').textContent = fmtNum(k.total_all)+' EUR';
+    document.getElementById('kpiAmountDelta').innerHTML =
+      `${ov.year} 年 ${fmtNum(k.year_amount)} EUR · 同比 <span style="color:${colorOf(k.year_yoy)}">${fmtPct(k.year_yoy,true)}</span>`;
+    document.getElementById('kpiQty').textContent = fmtInt(k.year_qty);
+    document.getElementById('kpiQtyLabel').textContent = `销量（${ov.year}）`;
+    document.getElementById('kpiQtyDelta').innerHTML =
+      `同比 <span style="color:${colorOf(k.qty_yoy)}">${fmtPct(k.qty_yoy,true)}</span>`;
+    document.getElementById('kpiCountries').textContent = k.countries;
+    document.getElementById('kpiCountriesSub').textContent = `${k.platforms} 平台 · ${k.categories} 品类`;
+    document.getElementById('kpiRows').textContent = fmtInt(dim.rows);
+    document.getElementById('trendSub').textContent =
+      `${ov.year} 各月销售额 + 同比（单位 EUR）`;
+
+    mount('trendChart', patchChart(ov.charts.trend.chart, ov.charts.trend.columns));
+    mount('platformChart', patchChart(ov.charts.platform.chart, ov.charts.platform.columns));
+  }catch(e){
+    console.error(e);
+  }
+})();
+
+/* ============ 最近问数 ============ */
+(async ()=>{
+  const box=document.getElementById('recentList');
+  try{
+    const list=await fetch('/api/conversations').then(r=>r.json());
+    if(!list.length){
+      box.innerHTML='<div style="padding:12px;color:var(--text-mute);font-size:12px">还没有问数记录，<a href="chat.html" style="color:var(--primary)">开始第一个问题 →</a></div>';
+      return;
+    }
+    box.innerHTML=list.slice(0,4).map(c=>`
+      <a class="flex-between" href="chat.html" data-cid="${esc(c.id)}"
+         style="padding:10px;background:var(--surface-2);border-radius:var(--r-md);text-decoration:none;color:inherit">
+        <div>
+          <div style="font-size:13px">${esc(c.title)}</div>
+          <div style="font-size:11px;color:var(--text-mute)">${relTime(c.updated_at)} · 会话</div>
+        </div>
+        <span class="tag tag-success">继续</span>
+      </a>`).join('');
+    box.querySelectorAll('a[data-cid]').forEach(a=>{
+      a.addEventListener('click',()=>localStorage.setItem('aibi_cid',a.dataset.cid));
+    });
+  }catch(e){
+    box.innerHTML='<div style="padding:12px;color:var(--text-mute);font-size:12px">无法加载会话列表</div>';
+  }
+})();
+</script>
+</body>
+</html>

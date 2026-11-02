@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>分析主题 · SmartBI 智能分析</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="themes">
+
+<!-- ============ Sidebar Nav (frozen) ============ -->
+<aside class="app-nav">
+  <div class="brand">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+    </div>
+    <h1>Smart<span>BI</span></h1>
+  </div>
+  <div class="nav-section">
+    <div class="label">主菜单</div>
+    <a class="nav-item" data-nav="dashboard" href="index.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>工作台</span>
+    </a>
+    <a class="nav-item" data-nav="datasources" href="datasources.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据源</span>
+    </a>
+    <a class="nav-item" data-nav="chat" href="chat.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>智能问数</span>
+      <span class="badge">NEW</span>
+    </a>
+    <a class="nav-item" data-nav="themes" href="themes.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>分析主题</span>
+    </a>
+    <a class="nav-item" data-nav="tasks" href="tasks.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>AI 任务</span>
+    </a>
+  </div>
+  <div class="nav-footer">
+    <div class="user-card">
+      <div class="avatar">YQ</div>
+      <div class="user-info"><div class="name">余强</div><div class="role">数据分析师</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="app-content">
+  <header class="topbar">
+    <div class="page-title"><span class="crumb">SmartBI</span> / 分析主题</div>
+    <div class="topbar-actions">
+      <select class="input" style="width:auto;padding:8px 12px">
+        <option>全部主题</option><option>销售分析</option><option>市场分析</option><option>运营分析</option>
+      </select>
+      <button class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        新建主题
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Theme categories -->
+    <div class="flex gap-12 mb-24" style="flex-wrap:wrap">
+      <button class="btn btn-primary">全部 (6)</button>
+      <button class="btn btn-ghost">销售总览</button>
+      <button class="btn btn-ghost">平台分析</button>
+      <button class="btn btn-ghost">品类分析</button>
+      <button class="btn btn-ghost">地域分析</button>
+      <button class="btn btn-ghost">增长归因</button>
+      <button class="btn btn-ghost">客户洞察</button>
+    </div>
+
+    <!-- Theme cards -->
+    <div class="grid grid-3">
+
+      <!-- Theme 1: Sales Overview -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="icon-box" style="background:var(--primary-soft);margin:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600">销售总览</div>
+            <div style="font-size:11px;color:var(--text-mute)">全局销售健康度看板</div>
+          </div>
+        </div>
+        <div class="grid grid-2 mb-12" style="gap:8px">
+          <div style="background:var(--bg-2);border-radius:8px;padding:10px">
+            <div style="font-size:11px;color:var(--text-mute)">总销售额（2024-2025）</div>
+            <div style="font-size:18px;font-weight:700;font-family:monospace">€5.13亿</div>
+          </div>
+          <div style="background:var(--bg-2);border-radius:8px;padding:10px">
+            <div style="font-size:11px;color:var(--text-mute)">2025 同比</div>
+            <div style="font-size:18px;font-weight:700;color:var(--danger)">-0.7%</div>
+          </div>
+        </div>
+        <!-- mini chart -->
+        <svg viewBox="0 0 280 60" width="100%" height="50">
+          <polyline points="0,45 30,38 60,42 90,30 120,35 150,22 180,28 210,15 240,20 270,8" fill="none" stroke="var(--primary)" stroke-width="2"/>
+          <polyline points="0,45 30,38 60,42 90,30 120,35 150,22 180,28 210,15 240,20 270,8 270,60 0,60" fill="url(#g1)" opacity=".2"/>
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+        </svg>
+        <div class="flex-between mt-12">
+          <span class="tag tag-primary">销售分析</span>
+          <span style="font-size:11px;color:var(--text-mute)">12 个图表</span>
+        </div>
+      </div>
+
+      <!-- Theme 2: Platform Analysis -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s;animation-delay:.05s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="icon-box" style="background:var(--accent-soft);margin:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600">平台分析</div>
+            <div style="font-size:11px;color:var(--text-mute)">17 个平台对比与竞争</div>
+          </div>
+        </div>
+        <div class="mb-12">
+          <div class="flex-between mb-6" style="font-size:12px"><span>Amazon</span><span style="color:var(--text-sub)">63.0%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:63%"></div></div>
+          <div class="flex-between mb-6 mt-8" style="font-size:12px"><span>Temu</span><span style="color:var(--text-sub)">13.6%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:13.6%;background:var(--accent)"></div></div>
+          <div class="flex-between mb-6 mt-8" style="font-size:12px"><span>Otto</span><span style="color:var(--text-sub)">10.3%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:10.3%;background:var(--success)"></div></div>
+          <div class="flex-between mt-8" style="font-size:12px"><span>其他 14 个</span><span style="color:var(--text-sub)">13.1%</span></div>
+          <div class="progress"><div class="progress-bar" style="width:13.1%;background:var(--warning)"></div></div>
+        </div>
+        <div class="flex-between">
+          <span class="tag tag-accent">市场分析</span>
+          <span style="font-size:11px;color:var(--text-mute)">8 个图表</span>
+        </div>
+      </div>
+
+      <!-- Theme 3: Category Analysis -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s;animation-delay:.1s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="icon-box" style="background:rgba(16,185,129,.12);margin:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600">品类分析</div>
+            <div style="font-size:11px;color:var(--text-mute)">143 个品类结构与趋势</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-2);border-radius:8px;padding:10px;margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text-mute);margin-bottom:6px">Top 品类</div>
+          <div style="font-size:13px">餐椅 · 吧椅 · 梳妆台 · 书架 · 活动篷</div>
+        </div>
+        <svg viewBox="0 0 280 60" width="100%" height="50">
+          <g fill="var(--success)" opacity=".7">
+            <rect x="10" y="20" width="18" height="40"/><rect x="40" y="10" width="18" height="50"/>
+            <rect x="70" y="30" width="18" height="30"/><rect x="100" y="15" width="18" height="45"/>
+            <rect x="130" y="25" width="18" height="35"/><rect x="160" y="35" width="18" height="25"/>
+            <rect x="190" y="18" width="18" height="42"/><rect x="220" y="28" width="18" height="32"/>
+          </g>
+        </svg>
+        <div class="flex-between mt-12">
+          <span class="tag tag-success">销售分析</span>
+          <span style="font-size:11px;color:var(--text-mute)">10 个图表</span>
+        </div>
+      </div>
+
+      <!-- Theme 4: Region Analysis -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="icon-box" style="background:rgba(139,92,246,.12);margin:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600">地域分析</div>
+            <div style="font-size:11px;color:var(--text-mute)">53 国销售分布与热力</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-2);border-radius:8px;padding:10px;margin-bottom:12px">
+          <div class="grid grid-2" style="gap:8px">
+            <div><div style="font-size:11px;color:var(--text-mute)">Top 国家</div><div style="font-size:13px;font-weight:600">德国</div></div>
+            <div><div style="font-size:11px;color:var(--text-mute)">销售额（2025）</div><div style="font-size:13px;font-weight:600;font-family:monospace">€1.19亿</div></div>
+          </div>
+        </div>
+        <svg viewBox="0 0 280 60" width="100%" height="50">
+          <g fill="#8b5cf6" opacity=".6">
+            <circle cx="40" cy="30" r="14"/><circle cx="90" cy="35" r="10"/>
+            <circle cx="140" cy="25" r="16"/><circle cx="190" cy="38" r="8"/>
+            <circle cx="240" cy="28" r="11"/>
+          </g>
+        </svg>
+        <div class="flex-between mt-12">
+          <span class="tag" style="color:#8b5cf6;background:rgba(139,92,246,.12);border-color:transparent">地域分析</span>
+          <span style="font-size:11px;color:var(--text-mute)">6 个图表</span>
+        </div>
+      </div>
+
+      <!-- Theme 5: Growth Attribution -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s;animation-delay:.05s">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="icon-box" style="background:rgba(245,158,11,.12);margin:0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600">增长归因</div>
+            <div style="font-size:11px;color:var(--text-mute)">指标波动根因分析</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-2);border-radius:8px;padding:12px;margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text-mute);margin-bottom:8px">2025 Q3 销售额同比 +0.4% 归因</div>
+          <div class="mb-6">
+            <div class="flex-between" style="font-size:12px"><span>Temu 增长贡献</span><span style="color:var(--success)">+16.9pp</span></div>
+            <div class="progress mt-4"><div class="progress-bar" style="width:100%"></div></div>
+          </div>
+          <div class="mb-6">
+            <div class="flex-between" style="font-size:12px"><span>TikTok 增长贡献</span><span style="color:var(--success)">+0.6pp</span></div>
+            <div class="progress mt-4"><div class="progress-bar" style="width:4%"></div></div>
+          </div>
+          <div>
+            <div class="flex-between" style="font-size:12px"><span>Amazon 拖累</span><span style="color:var(--danger)">-16.8pp</span></div>
+            <div class="progress mt-4"><div class="progress-bar" style="width:99%;background:var(--danger)"></div></div>
+          </div>
+        </div>
+        <div class="flex-between">
+          <span class="tag tag-warning">归因分析</span>
+          <span style="font-size:11px;color:var(--text-mute)">AI 驱动</span>
+        </div>
+      </div>
+
+      <!-- Theme 6: Custom / Template -->
+      <div class="card fade-in" style="cursor:pointer;transition:transform .15s;animation-delay:.1s;border:2px dashed var(--border-light);background:transparent">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px 0;text-align:center">
+          <div style="width:48px;height:48px;border-radius:12px;background:var(--surface);display:flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-mute)" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div style="font-weight:600;margin-bottom:4px">创建自定义主题</div>
+          <div style="font-size:12px;color:var(--text-mute);max-width:200px">基于你的分析需求，快速搭建专属看板</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recommended analyses -->
+    <div class="section-head mt-24">
+      <div>
+        <div class="section-title">AI 推荐分析</div>
+        <div class="section-desc">基于当前数据趋势，SmartBI 为你推荐以下分析方向</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="flex gap-12">
+          <div class="icon-box" style="background:var(--accent-soft);margin:0;flex-shrink:0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:600;margin-bottom:4px">Temu 高增长可持续性分析</div>
+            <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">Temu 连续 4 季度增速超 50%，建议分析其增长驱动因素（品类/国家/价格带），评估可持续性。</div>
+            <a href="chat.html" class="btn btn-accent btn-sm">立即分析</a>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="flex gap-12">
+          <div class="icon-box" style="background:rgba(239,68,68,.12);margin:0;flex-shrink:0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:600;margin-bottom:4px">Ebay 增速放缓预警</div>
+            <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">Ebay 近 3 个月增速降至 5% 以下，低于行业均值，建议排查品类与国家维度的下滑原因。</div>
+            <a href="chat.html" class="btn btn-ghost btn-sm">查看详情</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="nav-active.js"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 任务 · SmartBI 智能分析</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="tasks">
+
+<!-- ============ Sidebar Nav (frozen) ============ -->
+<aside class="app-nav">
+  <div class="brand">
+    <div class="logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 3 5-8"/></svg>
+    </div>
+    <h1>Smart<span>BI</span></h1>
+  </div>
+  <div class="nav-section">
+    <div class="label">主菜单</div>
+    <a class="nav-item" data-nav="dashboard" href="index.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>工作台</span>
+    </a>
+    <a class="nav-item" data-nav="datasources" href="datasources.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>数据源</span>
+    </a>
+    <a class="nav-item" data-nav="chat" href="chat.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>智能问数</span>
+      <span class="badge">NEW</span>
+    </a>
+    <a class="nav-item" data-nav="themes" href="themes.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>分析主题</span>
+    </a>
+    <a class="nav-item" data-nav="tasks" href="tasks.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>AI 任务</span>
+    </a>
+  </div>
+  <div class="nav-footer">
+    <div class="user-card">
+      <div class="avatar">YQ</div>
+      <div class="user-info"><div class="name">余强</div><div class="role">数据分析师</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="app-content">
+  <header class="topbar">
+    <div class="page-title"><span class="crumb">SmartBI</span> / AI 任务</div>
+    <div class="topbar-actions">
+      <div class="search-box" style="width:260px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input placeholder="搜索任务...">
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Stats -->
+    <div class="grid grid-4 mb-24">
+      <div class="metric-card fade-in">
+        <div class="icon-box" style="background:var(--primary-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="metric-value" id="statConv">—</div>
+        <div class="metric-label">问数对话总数</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.05s">
+        <div class="icon-box" style="background:var(--accent-soft)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="metric-value" id="statReport">—</div>
+        <div class="metric-label">生成报告数</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.1s">
+        <div class="icon-box" style="background:rgba(16,185,129,.12)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="metric-value" id="statMonths">—</div>
+        <div class="metric-label">数据覆盖月数</div>
+      </div>
+      <div class="metric-card fade-in" style="animation-delay:.15s">
+        <div class="icon-box" style="background:rgba(245,158,11,.12)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="metric-value" id="statRows">—</div>
+        <div class="metric-label">数据行数（sales）</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-8 mb-20">
+      <button class="btn btn-primary">问数历史</button>
+      <button class="btn btn-ghost">报告任务</button>
+      <button class="btn btn-ghost">定时任务</button>
+    </div>
+
+    <!-- Running task banner -->
+    <div class="card mb-20" id="runningBanner" style="background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(6,182,212,.06));border-color:rgba(59,130,246,.3);display:none">
+      <div class="flex-between">
+        <div class="flex gap-12" style="align-items:center">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:600" id="runningTitle">正在生成报告</div>
+            <div style="font-size:12px;color:var(--text-sub);margin-top:2px" id="runningDesc">—</div>
+          </div>
+        </div>
+        <div style="width:180px">
+          <div class="progress"><div class="progress-bar" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task list -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="data-table">
+        <thead>
+          <tr><th>任务名称</th><th>类型</th><th>状态</th><th>耗时</th><th>创建时间</th><th>操作</th></tr>
+        </thead>
+        <tbody id="taskBody">
+          <tr><td colspan="6" style="color:var(--text-mute);padding:20px">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex-between mt-16">
+      <div style="font-size:13px;color:var(--text-mute)" id="taskCount">—</div>
+      <div class="flex gap-8">
+        <button class="btn btn-ghost btn-sm" id="btnGenReport">生成经营分析报告</button>
+        <a href="chat.html" class="btn btn-primary btn-sm">开始新问数</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="nav-active.js"></script>
+<script>
+function fmtTime(ts){
+  const d = new Date(ts*1000);
+  const pad = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+(async ()=>{
+  try{
+    const [conv, reports, dim] = await Promise.all([
+      fetch('/api/conversations').then(r=>r.json()),
+      fetch('/api/reports').then(r=>r.json()),
+      fetch('/api/dimensions').then(r=>r.json()),
+    ]);
+
+    document.getElementById('statConv').textContent = conv.length;
+    document.getElementById('statReport').textContent = reports.length;
+    document.getElementById('statRows').textContent = dim.rows.toLocaleString('en-US');
+    const months = (Number(dim.period_max.slice(0,4))-Number(dim.period_min.slice(0,4)))*12
+      + (Number(dim.period_max.slice(5,7))-Number(dim.period_min.slice(5,7))) + 1;
+    document.getElementById('statMonths').textContent = months;
+
+    const items = [
+      ...conv.map(c=>({title:c.title, type:'conv', ts:c.updated_at, cid:c.id, detail:`数据集：销售订单数据 · ${dim.period_min} ~ ${dim.period_max}`})),
+      ...reports.map(r=>({title:`经营分析报告 ${r.name.replace('report_','')}`, type:'report', ts:r.created_at, url:r.url, detail:`HTML 报告 · ${(r.size/1024).toFixed(0)} KB`})),
+    ].sort((a,b)=>b.ts-a.ts).slice(0,20);
+
+    if(!items.length){
+      document.getElementById('taskBody').innerHTML =
+        '<tr><td colspan="6" style="color:var(--text-mute);padding:20px">暂无记录，去 <a href="chat.html" style="color:var(--primary)">智能问数</a> 提第一个问题。</td></tr>';
+      document.getElementById('taskCount').textContent = '共 0 条记录';
+      return;
+    }
+
+    document.getElementById('taskBody').innerHTML = items.map(it=>{
+      const isConv = it.type==='conv';
+      const op = isConv
+        ? `<a href="chat.html" class="btn btn-ghost btn-sm" data-cid="${esc(it.cid)}">查看</a>`
+        : `<a href="${esc(it.url)}" target="_blank" class="btn btn-ghost btn-sm">查看</a>`;
+      return `<tr>
+        <td><div style="font-weight:500">${esc(it.title)}</div>
+            <div style="font-size:11px;color:var(--text-mute)">${esc(it.detail)}</div></td>
+        <td><span class="tag ${isConv?'tag-primary':'tag-accent'}">${isConv?'问数':'报告'}</span></td>
+        <td><span class="tag tag-success">已完成</span></td>
+        <td style="color:var(--text-sub)">—</td>
+        <td style="color:var(--text-sub)">${fmtTime(it.ts)}</td>
+        <td>${op}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('taskBody').querySelectorAll('a[data-cid]').forEach(a=>{
+      a.addEventListener('click',()=>localStorage.setItem('aibi_cid',a.dataset.cid));
+    });
+    document.getElementById('taskCount').textContent = `共 ${conv.length + reports.length} 条记录`;
+  }catch(e){
+    console.error(e);
+    document.getElementById('taskBody').innerHTML =
+      '<tr><td colspan="6" style="color:var(--text-mute);padding:20px">无法加载记录</td></tr>';
+  }
+})();
+
+document.getElementById('btnGenReport').addEventListener('click', async (e)=>{
+  const b = e.currentTarget;
+  b.disabled = true; b.textContent = '生成中…';
+  try{
+    const res = await fetch('/api/report', {method:'POST'});
+    if(!res.ok) throw new Error('报告生成失败');
+    const r = await res.json();
+    window.open(r.url, '_blank');
+    location.reload();
+  }catch(err){
+    alert(err.message);
+    b.disabled = false; b.textContent = '生成经营分析报告';
+  }
+});
+</script>
+</body>
+</html>

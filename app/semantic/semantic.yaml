@@ -1,0 +1,71 @@
+# ===== 语义层定义 =====
+# 所有「指标 → SQL 片段」的确定性映射都写在这里；LLM 只在语义层覆盖不到时才介入。
+# 修改指标口径后需重启服务（启动时加载）。
+
+table: sales
+
+columns:
+  order_year:  {type: int,    label: 年份}
+  order_month: {type: int,    label: 月份}
+  platform_name: {type: str,  label: 平台}
+  country_name: {type: str,   label: 国家}
+  cate_lvl3_cn: {type: str,   label: 品类}
+  trd_amt_eur: {type: float,  label: 销售额(EUR)}
+  trd_prod_qty: {type: int,   label: 销量}
+  period:      {type: str,    label: 期间(YYYY-MM)}
+  month_start: {type: date,   label: 月初}
+
+# 基础指标
+metrics:
+  sales_amount:
+    label: 销售额
+    aliases: [销售额, 销售金额, 营收, 收入, 成交额, 交易额, gmv, 金额, 卖了多少钱]
+    agg: SUM(trd_amt_eur)
+    unit: EUR
+    format: currency
+  sales_qty:
+    label: 销量
+    aliases: [销量, 销售量, 销售数量, 件数, 数量, 卖了多少件, 出货量]
+    agg: SUM(trd_prod_qty)
+    unit: 件
+    format: int
+
+# 派生指标（依赖两个期间做比较，或依赖全量做占比）
+derived:
+  yoy:
+    label: 同比
+    aliases: [同比, 同比增长, 同比增速, 同比增长率, 同期, 相比去年, 较去年, 增长, 增长最快, 下滑, 下降, 下跌]
+    note: 需要上一自然年同期；数据缺 2023，故 2024 年的同比不可计算
+  mom:
+    label: 环比
+    aliases: [环比, 环比增长, 环比增速, 较上月, 相比上月, 月度增长]
+    note: 需要上一期间；2024-01 无前值
+  ratio:
+    label: 占比
+    aliases: [占比, 份额, 比例, 构成, 结构, 占多少, 贡献]
+    note: 分母为全量（或指定时间范围内的合计）
+  topn:
+    label: TopN 排名
+    aliases: [top, 排名, 排行, 前几, 最高, 最低, 最好, 最差, 最大, 最小, 最多, 最少, 领跑]
+    default_n: 10
+    max_n: 50
+
+# 维度
+dimensions:
+  platform:
+    label: 平台
+    column: platform_name
+    aliases: [平台, 渠道, channel, 电商平台]
+  country:
+    label: 国家
+    column: country_name
+    aliases: [国家, 地区, 市场, 国别, 各国, 每个国家, 各国家]
+  category:
+    label: 品类
+    column: cate_lvl3_cn
+    aliases: [品类, 类目, 产品, 商品, 分类, 三级类目, 品类线]
+
+# 时间聚合粒度
+grain:
+  month: [按月份, 每月, 月度, 逐月, 按月, 各月, 月份趋势, 趋势, 走势, 变化]
+  year:  [按年, 每年, 年度, 逐年, 按年度, 各年]
